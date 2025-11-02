@@ -60,10 +60,16 @@ export default function Header(){
             title="Discord"
           >
             <FontAwesomeIcon icon={faDiscord} className="w-5 h-5" />
-          </a>
+            </a>
+          </div>
         </div>
-        </div>
-  </div>
-  </div>
+      </div>
+
+      <div className="text-lg mt-8 ml-1">
+    Hey there! I'm Chinmoy, a developer passionate about building efficient tools
+    and learning new technologies. I specialize in full-stack development using
+    Go, Rust, and TypeScript.
+      </div>
+    </div>
   );
 }
