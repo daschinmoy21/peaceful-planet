@@ -1,0 +1,13 @@
+---
+import { themeConfig } from '@/chiri-config'
+import IndexLayout from '@/layouts/chiri/IndexLayout.astro'
+---
+
+<IndexLayout title={`404 - ${themeConfig.site.title}`} description="Not Found">
+  <style>
+    .error-container {
+      color: var(--text-secondary);
+    }
+  </style>
+  <p class="error-container">Page Not Found...</p>
+</IndexLayout>

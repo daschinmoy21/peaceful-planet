@@ -1,0 +1,16 @@
+---
+import IndexLayout from '@/layouts/chiri/IndexLayout.astro'
+import About from '@/components/chiri/widgets/About.astro'
+import PostList from '@/components/chiri/widgets/PostList.astro'
+import { themeConfig } from '@/chiri-config'
+import { getSortedFilteredPosts } from '@/utils/chiri/draft'
+
+const posts = await getSortedFilteredPosts()
+---
+
+<IndexLayout title={themeConfig.site.title} description={themeConfig.site.description}>
+  <About />
+  <main>
+    <PostList posts={posts} />
+  </main>
+</IndexLayout>

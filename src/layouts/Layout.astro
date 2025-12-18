@@ -1,9 +1,11 @@
 ---
-import "../styles/global.css";
-import Navbar from "../components/Navbar.tsx";
+import "@/styles/global.css";
+import Background from "@/components/Background.astro";
+import Navbar from "@/components/Navbar";
 import Header from "../components/Header.tsx";
-import Stack from "../components/Stack.tsx";
+import { ClientRouter, fade } from "astro:transitions";
 ---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -12,12 +14,15 @@ import Stack from "../components/Stack.tsx";
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Portfolio</title>
+		<ClientRouter />
 	</head>
 	<body>
-		<Navbar />
-    <div class="pt-1">
-      <Header/>
-      <Stack/>
+		<Background />
+		<div transition:persist="navbar-wrapper">
+			<Navbar client:load />
+		</div>
+		<div class="pt-1" transition:animate={fade({ duration: "0.4s" })}>
+			<Header client:load />
 			<slot />
 		</div>
 	</body>

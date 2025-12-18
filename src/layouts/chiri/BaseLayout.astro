@@ -1,0 +1,69 @@
+---
+import { themeConfig } from "@/chiri-config";
+import "@/styles/global.css";
+import { ClientRouter } from "astro:transitions";
+import ThemeManager from "@/components/chiri/ui/ThemeManager.astro";
+import FaviconThemeSwitcher from "@/components/chiri/ui/FaviconThemeSwitcher.astro";
+import TransitionWrapper from "@/components/chiri/layout/TransitionWrapper.astro";
+import Background from "@/components/Background.astro";
+import Navbar from "@/components/Navbar";
+import type { LayoutProps } from "@/types";
+
+type Props = LayoutProps;
+
+const { type = "page" } = Astro.props;
+const language = themeConfig.site.language || "en-US";
+const contentWidth = themeConfig.general.contentWidth;
+const fadeAnimation = themeConfig.general.fadeAnimation;
+const widthValue = Math.min(parseFloat(contentWidth), 50);
+const shouldUseCustomWidth = widthValue > 25;
+const finalWidth = shouldUseCustomWidth ? `${widthValue}rem` : "25rem";
+---
+
+<html lang={language}>
+  <head>
+    <ThemeManager />
+    {fadeAnimation && <ClientRouter />}
+    <slot name="head" />
+  </head>
+  <body
+    data-centered={themeConfig.general.centeredLayout}
+    style={`
+      max-width: ${finalWidth};
+      ${shouldUseCustomWidth ? `--content-width: ${widthValue}rem;` : ""}
+    `}
+    class="pt-20"
+  >
+    <Background />
+    <div transition:persist="navbar-wrapper">
+      <Navbar client:load />
+    </div>
+    <FaviconThemeSwitcher />
+
+    {
+      fadeAnimation ? (
+        <TransitionWrapper type={type} class="layout-wrapper">
+          <slot />
+        </TransitionWrapper>
+      ) : (
+        <div class="layout-wrapper">
+          <slot />
+        </div>
+      )
+    }
+  </body>
+</html>
+
+<style is:global>
+  .layout-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 7.5rem);
+  }
+
+  @media (max-width: 768px) {
+    .layout-wrapper {
+      min-height: calc(100vh - 5.5rem);
+    }
+  }
+</style>
