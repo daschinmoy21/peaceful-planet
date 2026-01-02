@@ -42,7 +42,7 @@ export default function Skills() {
                 {technologies.map((tech) => (
                     <div
                         key={tech.name}
-                        className="flex items-center gap-2 px-4 py-2 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-zinc-700 hover:bg-zinc-800/80 transition-all duration-300 cursor-default hover:shadow-lg hover:shadow-zinc-900/20"
+                        className="flex items-center gap-2 px-4 py-2 bg-zinc-900/50 border border-zinc-800 rounded-sm hover:border-zinc-500 hover:bg-zinc-800/80 transition-all duration-300 cursor-default hover:shadow-lg hover:shadow-zinc-900/20"
                     >
                         <div className="w-5 h-5 flex items-center justify-center">
                             <img
@@ -54,7 +54,7 @@ export default function Skills() {
                                 }}
                             />
                         </div>
-                        <span className="text-sm font-medium text-zinc-300 group-hover:text-zinc-100 transition-colors">
+                        <span className="text-sm font-medium font-mono text-zinc-300 group-hover:text-zinc-100 transition-colors">
                             {tech.name}
                         </span>
                     </div>

@@ -1,6 +1,7 @@
 ---
 import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header";
 import Skills from "../components/Skills";
 import Projects from "../components/Projects";
 import Experience from "../components/Experience";
@@ -11,6 +12,7 @@ import Contact from "../components/Contact";
 ---
 
 <Layout>
+	<Header client:load />
 	<Welcome />
 	<Skills client:load />
 	<Experience client:visible />

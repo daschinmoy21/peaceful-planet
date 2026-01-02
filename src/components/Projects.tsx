@@ -62,10 +62,10 @@ export default function Projects() {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: index * 0.1 }}
                         viewport={{ once: true }}
-                        className="group relative grid grid-cols-1 md:grid-cols-12 gap-6 p-4 rounded-2xl bg-zinc-900/30 border border-white/5 hover:border-white/10 transition-all duration-300 hover:bg-zinc-900/50"
+                        className="group relative grid grid-cols-1 md:grid-cols-12 gap-6 p-4 bg-zinc-900/30 border border-zinc-800 hover:border-zinc-500 transition-all duration-300 hover:bg-zinc-900/50 rounded-sm"
                     >
                         {/* Image Section - Spans 5 cols */}
-                        <div className="md:col-span-5 relative overflow-hidden rounded-xl h-48 md:h-full min-h-[12rem] border border-white/5">
+                        <div className="md:col-span-5 relative overflow-hidden h-48 md:h-full min-h-[12rem] border border-zinc-800 rounded-sm">
                             <div className="absolute inset-0 bg-zinc-900/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
                             <img
                                 src={project.image}
@@ -78,7 +78,7 @@ export default function Projects() {
                         <div className="md:col-span-7 flex flex-col justify-between py-2">
                             <div>
                                 <div className="flex items-center justify-between mb-3">
-                                    <h3 className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">
+                                    <h3 className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors font-mono">
                                         {project.title}
                                     </h3>
                                     <div className="flex gap-3">
@@ -86,23 +86,23 @@ export default function Projects() {
                                             href={project.link}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-800/50 rounded-lg hover:bg-zinc-700 hover:text-white transition-colors border border-white/5 hover:border-white/20"
+                                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 hover:text-white transition-colors rounded-sm"
                                         >
                                             <ExternalLink className="w-3.5 h-3.5" />
                                             Live
                                         </a>
                                         <a
-                                            href={project.link} // Assuming generic link for demo, traditionally user might separate repo link
+                                            href={project.link} // Assuming generic link for demo
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-800/50 rounded-lg hover:bg-zinc-700 hover:text-white transition-colors border border-white/5 hover:border-white/20"
+                                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 hover:text-white transition-colors rounded-sm"
                                         >
                                             <Github className="w-3.5 h-3.5" />
                                             GitHub
                                         </a>
                                     </div>
                                 </div>
-                                <p className="text-zinc-400 leading-relaxed mb-6">
+                                <p className="text-zinc-400 leading-relaxed mb-6 font-mono text-sm">
                                     {project.description}
                                 </p>
                             </div>
@@ -111,7 +111,7 @@ export default function Projects() {
                                 {project.tags.map((tag) => (
                                     <span
                                         key={tag}
-                                        className="px-3 py-1 text-xs font-medium text-zinc-400 bg-zinc-800/50 border border-white/5 rounded-full"
+                                        className="px-3 py-1 text-xs font-medium text-zinc-400 bg-zinc-900 border border-zinc-800 rounded-sm font-mono"
                                     >
                                         {tag}
                                     </span>

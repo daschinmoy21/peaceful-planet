@@ -106,7 +106,7 @@ html {
 }
 
 body {
-  font-family: var(--sans);
+  font-family: var(--mono);
   font-feature-settings: 'ss03' 1;
   font-size: var(--font-size-m);
   text-autospace: normal;

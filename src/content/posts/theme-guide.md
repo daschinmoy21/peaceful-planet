@@ -1,9 +1,10 @@
 ---
-title: 'Theme Guide'
-pubDate: '2025-07-10'
+title: "Theme Guide"
+pubDate: "2025-07-10"
 ---
 
-Chiri is a minimal blog theme built with [Astro](https://astro.build), offering customization options while preserving its clean aesthetic.
+Chiri is a minimal blog theme built with [Astro](https://astro.build), offering
+customization options while preserving its clean aesthetic.
 
 ---
 
@@ -14,7 +15,8 @@ Chiri is a minimal blog theme built with [Astro](https://astro.build), offering 
 
 ## Main Files & Directories
 
-- `src/content/about/about.md` - Edit the about section of the index page. Leave it empty if you don't want any content.
+- `src/content/about/about.md` - Edit the about section of the index page. Leave
+  it empty if you don't want any content.
 - `src/content/posts/` - All blog posts are stored here
 - `src/config.ts` - Configure main site info and settings
 
@@ -22,7 +24,7 @@ Chiri is a minimal blog theme built with [Astro](https://astro.build), offering 
 // Site Info
 site: {
   website: 'https://astro-chiri.netlify.app/', // Site domain
-  title: 'CHIRI', // Site title
+  title: 'BLOG', // Site title
   author: '3ASH', // Author name
   description: 'Minimal blog built by Astro', // Site description
   language: 'en-US' // Default language
@@ -76,20 +78,21 @@ pubDate: '2025-07-10'
 
 You can configure the theme via `shikiConfig` in `astro.config.ts`.
 
-More details: [Syntax Highlighting | Astro Docs](https://docs.astro.build/en/guides/syntax-highlighting/)
+More details:
+[Syntax Highlighting | Astro Docs](https://docs.astro.build/en/guides/syntax-highlighting/)
 
 ```ts
-import { defineConfig } from 'astro/config'
+import { defineConfig } from "astro/config";
 
 export default defineConfig({
   markdown: {
     shikiConfig: {
-      light: 'github-light',
-      dark: 'github-dark',
-      wrap: false
-    }
-  }
-})
+      light: "github-light",
+      dark: "github-dark",
+      wrap: false,
+    },
+  },
+});
 ```
 
 ---

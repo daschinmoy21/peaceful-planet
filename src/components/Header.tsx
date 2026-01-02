@@ -6,10 +6,28 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { BadgeCheck } from "lucide-react";
 
 export default function Header() {
   const [isHovered, setIsHovered] = useState(false);
+  const [time, setTime] = useState("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      setTime(
+        new Date().toLocaleTimeString("en-US", {
+          timeZone: "Asia/Kolkata",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+      );
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <motion.div
@@ -24,15 +42,20 @@ export default function Header() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="h-48 w-full bg-neutral-800 rounded-t-2xl overflow-hidden relative">
+        <div className="h-48 w-full bg-neutral-800 rounded-sm overflow-hidden relative border border-zinc-800">
+          <img
+            src="/wanderer-init.png"
+            alt="Wanderer over the sea of Fog"
+            className={`h-full w-full object-cover transition-all duration-700 ease-in-out ${isHovered
+              ? "brightness-100 scale-[1.005]"
+              : "brightness-[0.6] scale-100"
+              }`}
+          />
           <img
             src="/wide-dither.webp"
-            alt="Wanderer over the sea of Fog"
-            className={`h-full w-full object-cover transition-all duration-700 ease-in-out ${
-              isHovered
-                ? "brightness-100 scale-105"
-                : "brightness-[0.6] scale-100"
-            }`}
+            alt="Wanderer over the sea of Fog (Hover)"
+            className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-in-out ${isHovered ? "opacity-100 scale-[1.2]" : "opacity-0 scale-100"
+              }`}
           />
         </div>
 
@@ -43,15 +66,15 @@ export default function Header() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-black/80 backdrop-blur-md border border-white/10 px-6 py-4 rounded-xl shadow-2xl max-w-sm w-[90%] z-50"
+              className="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-black/90 backdrop-blur-md border border-zinc-700/50 px-6 py-4 rounded-sm shadow-2xl max-w-sm w-[90%] z-50"
             >
               <div className="flex flex-col gap-1">
-                <div className="flex items-baseline justify-between border-b border-white/10 pb-2 mb-2">
+                <div className="flex items-baseline justify-between border-b border-zinc-800 pb-2 mb-2">
                   <motion.h3
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="text-xl font-bold text-white tracking-wide"
+                    className="text-xl font-bold text-white tracking-wide font-mono"
                   >
                     Venture Into the Unknown
                   </motion.h3>
@@ -59,7 +82,7 @@ export default function Header() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
-                    className="text-xs font-mono text-zinc-400"
+                    className="text-xs font-mono text-zinc-500"
                   >
                     /wan·der·er/
                   </motion.span>
@@ -68,95 +91,93 @@ export default function Header() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="text-sm text-zinc-300 leading-relaxed"
+                  className="text-sm text-zinc-400 leading-relaxed font-mono"
                 >
                   Wanderer Above The Sea Of Fog by Caspar David Friedrich
                 </motion.p>
               </div>
 
               {/* Tooltip Arrow */}
-              <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-black/80 border-l border-t border-white/10 transform rotate-45 backdrop-blur-md"></div>
+              <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-black/90 border-l border-t border-zinc-700/50 transform rotate-45 backdrop-blur-md"></div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <div className="px-8 pb-8 bg-zinc-900/40 rounded-b-2xl border border-zinc-800 border-t-0 -mt-1 backdrop-blur-md">
-        <div className="flex flex-col">
+      <div className="px-8 pb-8 mt-4 bg-zinc-900/40 border border-zinc-800 border-t-0 -mt-1 backdrop-blur-md">
+        <div className="flex flex-col md:flex-row gap-6 items-start md:items-end">
           {/* Profile Picture */}
-          <div className="-mt-16 mb-4 relative z-10">
+          <div className="-mt-16 relative z-10 shrink-0">
             <img
-              src="/pfp.webp"
+              src="/pfp2.jpg"
               alt="Profile Picture"
-              className="w-32 h-32 rounded-full border-4 border-zinc-950 object-cover"
+              className="w-32 h-32 rounded-full brightness-[0.8] border-4 border-zinc-950 object-cover"
             />
           </div>
 
           {/* User Info */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2 pb-2 w-full">
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-4xl font-bold text-white">Chinmoy</h1>
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-label="Verified Account"
-                  className="w-6 h-6 text-blue-500 fill-current"
-                >
-                  <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.416-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .495.083.965.238 1.4-1.272.65-2.147 2.02-2.147 3.6 0 1.58.875 2.95 2.147 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 4 3.818 4 .47 0 .92-.084 1.336-.25.62 1.333 1.926 2.25 3.437 2.25s2.817-.917 3.437-2.25c.416.165.866.25 1.336.25 2.11 0 3.818-1.79 3.818-4 0-.495-.084-.965-.238-1.4 1.272-.65 2.147-2.02 2.147-3.6z" />
-                  <path
-                    fill="#fff"
-                    d="M10 17l-5-5 1.41-1.42L10 14.17l7.59-7.59L19 8l-9 9z"
-                  />
-                </svg>
+              <div className="flex items-center gap-2">
+                <h1 className="text-4xl font-bold text-white tracking-tight font-mono">
+                  Chinmoy
+                </h1>
+                <BadgeCheck className="w-8 h-8 text-blue-500" fill="currentColor" stroke="black" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl text-zinc-300">Software Engineer</h3>
+              <h3 className="text-xl text-zinc-400 font-mono">
+                Software Developer
+              </h3>
             </div>
 
             {/* Social Media Buttons */}
-            <div className="flex gap-4">
+            <div className="flex gap-4 mt-1">
               <a
                 href="https://github.com/daschinmoy21"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 bg-zinc-900 hover:bg-zinc-700 text-white rounded-lg transition-colors"
+                className="text-white/80 hover:text-white transition-colors"
                 title="GitHub"
               >
-                <FontAwesomeIcon icon={faGithub} className="w-5 h-5" />
+                <FontAwesomeIcon icon={faGithub} className="w-6 h-6" />
               </a>
 
               <a
                 href="https://x.com/crimxnhaze"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 bg-zinc-900 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                className="text-blue-400/80 hover:text-blue-400 transition-colors"
                 title="Twitter"
               >
-                <FontAwesomeIcon icon={faTwitter} className="w-5 h-5" />
+                <FontAwesomeIcon icon={faTwitter} className="w-6 h-6" />
               </a>
 
               <a
-                href="mailto:your.email@example.com"
-                className="flex items-center justify-center w-10 h-10 bg-zinc-900 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                href="mailto:daschinmoyy21@gmail.com"
+                className="text-red-500/80 hover:text-red-500 transition-colors"
                 title="Email"
               >
-                <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5" />
+                <FontAwesomeIcon icon={faEnvelope} className="w-6 h-6" />
               </a>
 
-              <a
-                href="https://discord.gg/yourinvite"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 bg-zinc-900 hover:bg-gray-700 text-white rounded-lg transition-colors"
-                title="Discord"
-              >
-                <FontAwesomeIcon icon={faDiscord} className="w-5 h-5" />
-              </a>
             </div>
+          </div>
+        </div>
 
-            <div className="text-lg text-zinc-300 max-w-2xl">
-              Hey there! I'm Chinmoy, a developer building efficient tools and
-              learning new technologies. I specialize in full-stack development
-              using Go, Rust, and TypeScript.
+        <div className="flex flex-col md:flex-row justify-between items-end gap-4 mt-10">
+          <div className="text-lg text-zinc-400 max-w-2xl font-mono leading-relaxed">
+            Hey there! I'm Chinmoy, a developer building efficient tools and
+            learning new technologies. I specialize in full-stack development
+            using Go, Rust, and TypeScript.
+          </div>
+
+          <div className="flex flex-col items-end gap-1 text-sm text-zinc-500 font-mono shrink-0">
+            <div className="flex items-center gap-2">
+              <span>
+                {time}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span>Assam, India</span>
             </div>
           </div>
         </div>

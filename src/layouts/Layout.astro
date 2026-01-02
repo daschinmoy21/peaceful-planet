@@ -1,7 +1,6 @@
 ---
 import "@/styles/global.css";
 import Navbar from "@/components/Navbar";
-import Header from "../components/Header.tsx";
 import { ClientRouter, fade } from "astro:transitions";
 ---
 
@@ -20,7 +19,6 @@ import { ClientRouter, fade } from "astro:transitions";
 			<Navbar client:load />
 		</div>
 		<div class="pt-1" transition:animate={fade({ duration: "0.4s" })}>
-			<Header client:load />
 			<slot />
 		</div>
 	</body>
