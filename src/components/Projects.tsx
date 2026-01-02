@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowUpRight, Github, ExternalLink } from 'lucide-react';
+import { ArrowUpRight, Github, ExternalLink, ChevronRight } from 'lucide-react';
 import { motion } from "framer-motion";
 
 const projects = [
@@ -34,7 +34,13 @@ const projects = [
     },
 ];
 
-export default function Projects() {
+interface ProjectsProps {
+    limit?: number;
+}
+
+export default function Projects({ limit }: ProjectsProps) {
+    const visibleProjects = limit ? projects.slice(0, limit) : projects;
+
     return (
         <motion.div
             className="max-w-4xl mx-auto px-4 py-8 text-zinc-300"
@@ -45,17 +51,19 @@ export default function Projects() {
         >
             <div className="flex items-center gap-3 mb-8 ml-5">
                 <h1 className="text-3xl font-bold text-white">Projects</h1>
-                <a
-                    href="/projects"
-                    className="text-zinc-400 hover:text-white transition-colors p-1 hover:bg-zinc-800/50 rounded-lg"
-                    aria-label="View all projects"
-                >
-                    <ArrowUpRight className="w-6 h-6" />
-                </a>
+                {!limit && (
+                    <a
+                        href="/projects"
+                        className="text-zinc-400 hover:text-white transition-colors p-1 hover:bg-zinc-800/50 rounded-lg"
+                        aria-label="View all projects"
+                    >
+                        <ArrowUpRight className="w-6 h-6" />
+                    </a>
+                )}
             </div>
 
             <div className="flex flex-col gap-6 ml-5">
-                {projects.map((project, index) => (
+                {visibleProjects.map((project, index) => (
                     <motion.div
                         key={index}
                         initial={{ opacity: 0, y: 20 }}
@@ -121,6 +129,18 @@ export default function Projects() {
                     </motion.div>
                 ))}
             </div>
+
+            {limit && (
+                <div className="flex justify-center mt-12 ml-5">
+                    <a
+                        href="/projects"
+                        className="group flex items-center gap-2 px-6 py-3 text-sm font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:text-white transition-all rounded-sm font-mono"
+                    >
+                        Show All Projects
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </a>
+                </div>
+            )}
         </motion.div>
     );
 }

@@ -21,7 +21,7 @@ export default function Header() {
           hour: "2-digit",
           minute: "2-digit",
           hour12: true,
-        })
+        }),
       );
     };
     updateTime();
@@ -46,16 +46,18 @@ export default function Header() {
           <img
             src="/wanderer-init.png"
             alt="Wanderer over the sea of Fog"
-            className={`h-full w-full object-cover transition-all duration-700 ease-in-out ${isHovered
-              ? "brightness-100 scale-[1.005]"
-              : "brightness-[0.6] scale-100"
-              }`}
+            className={`h-full w-full object-cover transition-all duration-700 ease-in-out ${
+              isHovered
+                ? "brightness-100 scale-[1.005]"
+                : "brightness-[0.6] scale-100"
+            }`}
           />
           <img
             src="/wide-dither.webp"
             alt="Wanderer over the sea of Fog (Hover)"
-            className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-in-out ${isHovered ? "opacity-100 scale-[1.2]" : "opacity-0 scale-100"
-              }`}
+            className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-in-out ${
+              isHovered ? "opacity-100 scale-[1.2]" : "opacity-0 scale-100"
+            }`}
           />
         </div>
 
@@ -93,7 +95,8 @@ export default function Header() {
                   transition={{ delay: 0.3 }}
                   className="text-sm text-zinc-400 leading-relaxed font-mono"
                 >
-                  Wanderer Above The Sea Of Fog by Caspar David Friedrich
+                  Wanderer Above The Sea Of Fog by Caspar David Friedrich. A
+                  Personal Favourite of mine.
                 </motion.p>
               </div>
 
@@ -122,7 +125,12 @@ export default function Header() {
                 <h1 className="text-4xl font-bold text-white tracking-tight font-mono">
                   Chinmoy
                 </h1>
-                <BadgeCheck className="w-8 h-8 text-blue-500" fill="currentColor" stroke="black" strokeWidth={1.5} />
+                <BadgeCheck
+                  className="w-8 h-8 text-blue-500"
+                  fill="currentColor"
+                  stroke="black"
+                  strokeWidth={1.5}
+                />
               </div>
               <h3 className="text-xl text-zinc-400 font-mono">
                 Software Developer
@@ -158,7 +166,6 @@ export default function Header() {
               >
                 <FontAwesomeIcon icon={faEnvelope} className="w-6 h-6" />
               </a>
-
             </div>
           </div>
         </div>
@@ -172,9 +179,7 @@ export default function Header() {
 
           <div className="flex flex-col items-end gap-1 text-sm text-zinc-500 font-mono shrink-0">
             <div className="flex items-center gap-2">
-              <span>
-                {time}
-              </span>
+              <span>{time}</span>
             </div>
             <div className="flex items-center gap-2">
               <span>Assam, India</span>
