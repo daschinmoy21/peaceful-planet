@@ -1,6 +1,5 @@
 ---
 import "@/styles/global.css";
-import Background from "@/components/Background.astro";
 import Navbar from "@/components/Navbar";
 import Header from "../components/Header.tsx";
 import { ClientRouter, fade } from "astro:transitions";
@@ -17,7 +16,6 @@ import { ClientRouter, fade } from "astro:transitions";
 		<ClientRouter />
 	</head>
 	<body>
-		<Background />
 		<div transition:persist="navbar-wrapper">
 			<Navbar client:load />
 		</div>

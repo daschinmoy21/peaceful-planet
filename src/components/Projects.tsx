@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Github, ExternalLink } from 'lucide-react';
 import { motion } from "framer-motion";
 
 const projects = [
@@ -54,32 +54,71 @@ export default function Projects() {
                 </a>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ml-5">
+            <div className="flex flex-col gap-6 ml-5">
                 {projects.map((project, index) => (
-                    <a
+                    <motion.div
                         key={index}
-                        href={project.link}
-                        className="block rounded-xl bg-zinc-800/30 hover:bg-zinc-800/50 transition-all duration-300 border border-zinc-700/30 hover:border-zinc-500/50 hover:-translate-y-1 group"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        viewport={{ once: true }}
+                        className="group relative grid grid-cols-1 md:grid-cols-12 gap-6 p-4 rounded-2xl bg-zinc-900/30 border border-white/5 hover:border-white/10 transition-all duration-300 hover:bg-zinc-900/50"
                     >
-                        <div className="h-48 overflow-hidden rounded-t-xl">
+                        {/* Image Section - Spans 5 cols */}
+                        <div className="md:col-span-5 relative overflow-hidden rounded-xl h-48 md:h-full min-h-[12rem] border border-white/5">
+                            <div className="absolute inset-0 bg-zinc-900/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
                             <img
                                 src={project.image}
                                 alt={project.title}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
                         </div>
-                        <div className="p-6">
-                            <h3 className="text-xl font-semibold mb-2 text-zinc-100">{project.title}</h3>
-                            <p className="text-zinc-200 text-m mb-4">{project.description}</p>
-                            <div className="flex flex-wrap gap-2">
+
+                        {/* Content Section - Spans 7 cols */}
+                        <div className="md:col-span-7 flex flex-col justify-between py-2">
+                            <div>
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">
+                                        {project.title}
+                                    </h3>
+                                    <div className="flex gap-3">
+                                        <a
+                                            href={project.link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-800/50 rounded-lg hover:bg-zinc-700 hover:text-white transition-colors border border-white/5 hover:border-white/20"
+                                        >
+                                            <ExternalLink className="w-3.5 h-3.5" />
+                                            Live
+                                        </a>
+                                        <a
+                                            href={project.link} // Assuming generic link for demo, traditionally user might separate repo link
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-800/50 rounded-lg hover:bg-zinc-700 hover:text-white transition-colors border border-white/5 hover:border-white/20"
+                                        >
+                                            <Github className="w-3.5 h-3.5" />
+                                            GitHub
+                                        </a>
+                                    </div>
+                                </div>
+                                <p className="text-zinc-400 leading-relaxed mb-6">
+                                    {project.description}
+                                </p>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2 mt-auto">
                                 {project.tags.map((tag) => (
-                                    <span key={tag} className="text-xs px-2 py-1 rounded bg-zinc-700/50 text-zinc-300 font-mono">
+                                    <span
+                                        key={tag}
+                                        className="px-3 py-1 text-xs font-medium text-zinc-400 bg-zinc-800/50 border border-white/5 rounded-full"
+                                    >
                                         {tag}
                                     </span>
                                 ))}
                             </div>
                         </div>
-                    </a>
+                    </motion.div>
                 ))}
             </div>
         </motion.div>

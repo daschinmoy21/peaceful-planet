@@ -5,7 +5,6 @@ import { ClientRouter } from "astro:transitions";
 import ThemeManager from "@/components/chiri/ui/ThemeManager.astro";
 import FaviconThemeSwitcher from "@/components/chiri/ui/FaviconThemeSwitcher.astro";
 import TransitionWrapper from "@/components/chiri/layout/TransitionWrapper.astro";
-import Background from "@/components/Background.astro";
 import Navbar from "@/components/Navbar";
 import type { LayoutProps } from "@/types";
 
@@ -34,7 +33,6 @@ const finalWidth = shouldUseCustomWidth ? `${widthValue}rem` : "25rem";
     `}
     class="pt-20"
   >
-    <Background />
     <div transition:persist="navbar-wrapper">
       <Navbar client:load />
     </div>
