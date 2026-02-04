@@ -39,20 +39,27 @@ export default function Header() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="h-48 w-full bg-zinc-950 rounded-sm overflow-hidden relative border border-zinc-950">
+        <div
+          className="h-48 w-full bg-zinc-950 rounded-sm overflow-hidden relative border border-zinc-950"
+          style={{ height: "12rem" }}
+        >
           <img
             src="/wanderer-init.png"
             alt="Wanderer over the sea of Fog"
+            loading="eager"
             className={`h-full w-full object-cover transition-all duration-700 ease-in-out ${isHovered
               ? "brightness-100 scale-[1.005]"
               : "brightness-[0.6] scale-100"
               }`}
+            style={{ objectFit: "cover" }}
           />
           <img
             src="/wide-dither.webp"
             alt="Wanderer over the sea of Fog (Hover)"
+            loading="eager"
             className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-in-out ${isHovered ? "opacity-100 scale-[1.2]" : "opacity-0 scale-100"
               }`}
+            style={{ objectFit: "cover" }}
           />
         </div>
 
