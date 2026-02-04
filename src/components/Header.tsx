@@ -11,7 +11,7 @@ import { BadgeCheck } from "lucide-react";
 
 export default function Header() {
   const [isHovered, setIsHovered] = useState(false);
-  const [time, setTime] = useState("");
+  const [time, setTime] = useState("\u00A0");
 
   useEffect(() => {
     const updateTime = () => {
@@ -172,7 +172,14 @@ export default function Header() {
 
           <div className="flex flex-col items-end gap-1 text-sm text-zinc-500 font-mono shrink-0">
             <div className="flex items-center gap-2">
-              <span>{time}</span>
+              <motion.span
+                className="min-w-[5rem] text-right font-mono tabular-nums"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: time === "\u00A0" ? 0 : 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                {time}
+              </motion.span>
             </div>
             <div className="flex items-center gap-2">
               <span>Assam, India</span>

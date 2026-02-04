@@ -2,6 +2,10 @@
 import "@/styles/global.css";
 import Navbar from "@/components/Navbar";
 import { ClientRouter, fade } from "astro:transitions";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+config.autoAddCss = false;
+
 import Analytics from '@vercel/analytics/astro'
 ---
 
