@@ -51,7 +51,7 @@ export default function Header() {
               ? "brightness-100 scale-[1.005]"
               : "brightness-[0.6] scale-100"
               }`}
-            style={{ objectFit: "cover" }}
+            style={{ objectFit: "cover", width: "100%", height: "100%" }}
           />
           <img
             src="/wide-dither.webp"
@@ -59,7 +59,7 @@ export default function Header() {
             loading="eager"
             className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-in-out ${isHovered ? "opacity-100 scale-[1.2]" : "opacity-0 scale-100"
               }`}
-            style={{ objectFit: "cover" }}
+            style={{ objectFit: "cover", width: "100%", height: "100%" }}
           />
         </div>
 
