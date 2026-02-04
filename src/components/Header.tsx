@@ -30,11 +30,8 @@ export default function Header() {
   }, []);
 
   return (
-    <motion.div
+    <div
       className="max-w-4xl mx-auto pt-10"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
     >
       {/* Banner Area */}
       <div
@@ -46,18 +43,16 @@ export default function Header() {
           <img
             src="/wanderer-init.png"
             alt="Wanderer over the sea of Fog"
-            className={`h-full w-full object-cover transition-all duration-700 ease-in-out ${
-              isHovered
-                ? "brightness-100 scale-[1.005]"
-                : "brightness-[0.6] scale-100"
-            }`}
+            className={`h-full w-full object-cover transition-all duration-700 ease-in-out ${isHovered
+              ? "brightness-100 scale-[1.005]"
+              : "brightness-[0.6] scale-100"
+              }`}
           />
           <img
             src="/wide-dither.webp"
             alt="Wanderer over the sea of Fog (Hover)"
-            className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-in-out ${
-              isHovered ? "opacity-100 scale-[1.2]" : "opacity-0 scale-100"
-            }`}
+            className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-in-out ${isHovered ? "opacity-100 scale-[1.2]" : "opacity-0 scale-100"
+              }`}
           />
         </div>
 
@@ -185,6 +180,6 @@ export default function Header() {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
