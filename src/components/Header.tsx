@@ -42,7 +42,7 @@ export default function Header() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="h-48 w-full bg-neutral-800 rounded-sm overflow-hidden relative border border-zinc-800">
+        <div className="h-48 w-full bg-zinc-950 rounded-sm overflow-hidden relative border border-zinc-950">
           <img
             src="/wanderer-init.png"
             alt="Wanderer over the sea of Fog"
@@ -68,7 +68,7 @@ export default function Header() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-black/90 backdrop-blur-md border border-zinc-700/50 px-6 py-4 rounded-sm shadow-2xl max-w-sm w-[90%] z-50"
+              className="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-black backdrop-blur-md border border-zinc-700/50 px-6 py-4 rounded-sm shadow-2xl max-w-sm w-[90%] z-50"
             >
               <div className="flex flex-col gap-1">
                 <div className="flex items-baseline justify-between border-b border-zinc-800 pb-2 mb-2">
@@ -95,8 +95,7 @@ export default function Header() {
                   transition={{ delay: 0.3 }}
                   className="text-sm text-zinc-400 leading-relaxed font-mono"
                 >
-                  Wanderer Above The Sea Of Fog by Caspar David Friedrich. A
-                  Personal Favourite of mine.
+                  Wanderer Above The Sea Of Fog by Caspar David Friedrich.
                 </motion.p>
               </div>
 
@@ -107,7 +106,7 @@ export default function Header() {
         </AnimatePresence>
       </div>
 
-      <div className="px-8 pb-8 mt-4 bg-zinc-900/40 border border-zinc-800 border-t-0 -mt-1 backdrop-blur-md">
+      <div className="px-8 pb-8 bg-zinc-950 border border-zinc-800 border-t-0 -mt-1 backdrop-blur-md">
         <div className="flex flex-col md:flex-row gap-6 items-start md:items-end">
           {/* Profile Picture */}
           <div className="-mt-16 relative z-10 shrink-0">
@@ -122,11 +121,11 @@ export default function Header() {
           <div className="flex flex-col gap-2 pb-2 w-full">
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-4xl font-bold text-white tracking-tight font-mono">
+                <h1 className="text-4xl mt-6 font-bold text-white tracking-tight font-mono">
                   Chinmoy
                 </h1>
                 <BadgeCheck
-                  className="w-8 h-8 text-blue-500"
+                  className="w-8 h-8 text-blue-500 mt-5"
                   fill="currentColor"
                   stroke="black"
                   strokeWidth={1.5}
@@ -172,9 +171,8 @@ export default function Header() {
 
         <div className="flex flex-col md:flex-row justify-between items-end gap-4 mt-10">
           <div className="text-lg text-zinc-400 max-w-2xl font-mono leading-relaxed">
-            Hey there! I'm Chinmoy, a developer building efficient tools and
-            learning new technologies. I specialize in full-stack development
-            using Go, Rust, and TypeScript.
+            Hey there! I'm Chinmoy, a backend and systems programmer
+            specializing in development using Rust and TypeScript.
           </div>
 
           <div className="flex flex-col items-end gap-1 text-sm text-zinc-500 font-mono shrink-0">

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 export default function Skills() {
   const technologies = [
     { name: "Rust", slug: "rust", color: "FFFFFF" },
+    { name: "Go", slug: "Go", color: "FFFFFF" },
     { name: "TypeScript", slug: "typescript", color: "3178C6" },
     { name: "JavaScript", slug: "javascript", color: "F7DF1E" },
     { name: "Python", slug: "python", color: "3776AB" },
@@ -14,13 +15,12 @@ export default function Skills() {
     { name: "Next.js", slug: "nextdotjs", color: "FFFFFF" },
     { name: "Astro", slug: "astro", color: "BC52EE" },
     { name: "Tailwind", slug: "tailwindcss", color: "06B6D4" },
-    { name: "Vite", slug: "vite", color: "646CFF" },
     { name: "Bun", slug: "bun", color: "FFFFFF" },
     { name: "Node.js", slug: "nodedotjs", color: "339933" },
     { name: "Docker", slug: "docker", color: "2496ED" },
     { name: "Linux", slug: "linux", color: "FCC624" },
     { name: "Git", slug: "git", color: "F05032" },
-    { name: "Nix", slug: "nixos", color: "5277C3" },
+    // { name: "Nix", slug: "nixos", color: "5277C3" },
     { name: "FFmpeg", slug: "ffmpeg", color: "007808" },
     { name: "WebRTC", slug: "webrtc", color: "FFFFFF" },
   ];

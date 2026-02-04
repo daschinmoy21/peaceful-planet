@@ -1,0 +1,88 @@
+---
+title: "Not all for loops are created equal"
+pubDate: "2026-01-31"
+description: "A look into for loops and how iteration models differ across programming languages."
+---
+
+If you’ve written code in more than one language, you’ve likely noticed that `for` loops look strikingly similar across the board. Whether it’s `for x in list` or `foreach (var x in list)`, the syntax suggests a universal constant: **iteration is iteration**.
+
+But beneath the syntax sugar lies one of the foundational design forks in programming language theory: **ownership during iteration**.
+
+When you write a loop, the language runtime has to make a critical decision about the data you are accessing. It must decide whether to give you a copy of the data, a reference to the data, or something in between. This isn't just an implementation detail; it defines the performance characteristics, safety guarantees, and bug classes of your entire application.
+
+In this post, I want to dissect these iteration models and explore why the "same" loop compiles down to very different contract with memory.
+
+## Omni-present syntax, Divergent semantics
+
+Let's look at the hidden question every loop answers: *What exactly is the loop variable?*
+
+Is it a **copy**? A **reference**? A **borrow**?
+
+### 1. Value Iteration (Go)
+
+In Go, iterating over a slice with `range` defaults to providing a copy of the value.
+
+```go
+for _, v := range slice {
+    v.field = "changed" // Modifies the copy, not the original
+}
+```
+
+This model defaults to **safety via isolation**. Because `v` is a copy, you cannot accidentally mutate the underlying collection or cause spooky action-at-a-distance. The memory model is simple: iteration creates new stack-allocated values.
+
+**The Trade-off**:
+- **Pros**: It eliminates an entire class of aliasing bugs.
+- **Cons**: It incurs a hidden performance penalty. If your slice contains large structs, every iteration triggers a `memcpy`, which can silently kill throughput in hot paths.
+
+### 2. Reference Iteration (Python, JavaScript, Java)
+
+Contrast this with the model favored by high-level managed languages. In Python or JavaScript, the loop variable is a **reference** (or pointer) to the object in the heap.
+
+```python
+for user in users:
+    user.name = "X" # Modifies the original object
+```
+
+Here, the language prioritizes **ergonomics and zero-copy**. You are working directly with the data.
+
+**The Trade-off**:
+- **Pros**: It's performant by default regarding memory bandwidth (no copying).
+- **Cons**: It introduces **implicit aliasing**. A mutation inside a loop updates the state "globally" for anyone holding a reference to that object. This creates the classic concurrency nightmare: if another thread touches `users` while you are iterating, you have a race condition.
+
+### 3. Borrowed Iteration (Rust)
+
+Rust takes a third path, exposing the memory model directly in the syntax. It forces you to choose the contract you want with the data using its ownership system.
+
+```rust
+for user in &users {}     // Immutable borrow: Read-only access
+for user in &mut users {} // Mutable borrow: Exclusive write access
+for user in users {}      // Move: Transfer ownership (consume collection)
+```
+
+Ideally, this is the "correct" solution from a systems perspective. It provides the zero-cost benefits of Reference Iteration without the safety hazards.
+
+However, it introduces **friction**. The borrow checker will strictly enforce that you cannot mutate the collection *structure* (like pushing/popping) while iterating over it—a common source of iterator invalidation bugs in C++.
+
+## The Universal Baseline: Index Iteration
+
+When abstractions fail, every language allows you to fall back to the raw, C-style access pattern:
+
+```go
+for i := 0; i < len(slice); i++ {
+    slice[i] = mutate(slice[i])
+}
+```
+
+This is **Index Iteration**. It is the ultimate "trust me" mode. It bypasses iterator protocols entirely, giving you precise control over memory access at the cost of safety (off-by-one errors) and readability.
+
+## Conclusion
+
+The loop isn't just a control flow structure; it's a window into the language's philosophy.
+
+| Language | Default Model | Philosophy |
+| :--- | :--- | :--- |
+| **Go** | Value (Copy) | Simple mental model, safety > raw perf |
+| **Python** | Reference | Developer velocity, implicitness |
+| **Rust** | Borrow/Move | Explicit ownership, zero-cost safety |
+
+Next time you type `for`, pause and ask: **Who owns this data?** The answer might save you from a production bug down the line.
