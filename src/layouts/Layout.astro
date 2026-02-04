@@ -2,6 +2,7 @@
 import "@/styles/global.css";
 import Navbar from "@/components/Navbar";
 import { ClientRouter, fade } from "astro:transitions";
+import Analytics from '@vercel/analytics/astro'
 ---
 
 <!doctype html>
@@ -9,7 +10,7 @@ import { ClientRouter, fade } from "astro:transitions";
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/png" href="/moon1.jpg" />
+		<link rel="icon" type="image/png" href="/moon.jpg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Chinmoy Das</title>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,6 +22,7 @@ import { ClientRouter, fade } from "astro:transitions";
 		<ClientRouter />
 	</head>
 	<body>
+		<Analytics />
 		<div transition:persist="navbar-wrapper">
 			<Navbar client:load />
 		</div>
