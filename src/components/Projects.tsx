@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 const projects = [
   {
     title: "Russel",
-    description: "A local cloud-native orchestrator combining VM isolation with container speed. Spawns ephemeral microVMs in milliseconds via Cloud Hypervisor. Features QCOW2 support, I/O hotplugging, zero-copy Nix integration, Rust/Go architecture, and automatic public ingress.",
-    tags: ["Rust", "Go", "Cloud Hypervisor", "KVM", "Nix", "In Progress"],
+    description: "A cloud-native orchestrator that spawns ephemeral microVMs in milliseconds via Cloud Hypervisor. Combines VM isolation with container-like speed using QCOW2, I/O hotplugging, and zero-copy global cache. Built with Rust/Go and supports automatic public ingress.",
+    tags: ["Rust", "Go", "Cloud Hypervisor", "KVM", "In Progress"],
     image: "/wip.jpg",
   },
   {
@@ -41,6 +41,22 @@ const projects = [
     tags: ["PostgreSQL", "FastAPI", "React", "Socket.IO", "Docker"],
     github: "https://github.com/daschinmoy21/trello",
     image: "/trello2.png",
+  },
+  {
+    title: "BlockShare",
+    description:
+      "A decentralized file-sharing application combining blockchain technology with IPFS for secure, distributed file storage and ownership tracking.",
+    tags: ["React", "TypeScript", "Vite", "Ethers.js", "Express.js", "MongoDB", "Solidity", "Hardhat", "IPFS", "Node.js"],
+    github: "https://github.com/daschinmoy21/BlockShare",
+    image: "/web3-1.png",
+  },
+  {
+    title: "CipherPress",
+    description:
+      "A decentralized news platform built with React, IPFS, and Ethereum. Articles are stored on IPFS and indexed on the blockchain, creating a censorship-resistant news platform.",
+    tags: ["React", "TypeScript", "Vite", "Solidity", "Hardhat", "IPFS", "Ethereum", "ethers.js", "MetaMask"],
+    github: "https://github.com/daschinmoy21/CipherPress",
+    image: "/web3-1.png",
   },
 ];
 

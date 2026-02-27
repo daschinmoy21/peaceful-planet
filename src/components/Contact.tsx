@@ -9,7 +9,7 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 export default function Contact() {
   const socials = [
-    {
+    { 
       name: "GitHub",
       icon: faGithub,
       link: "https://github.com/daschinmoy21",

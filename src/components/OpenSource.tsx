@@ -4,6 +4,15 @@ import { GitPullRequest } from "lucide-react";
 
 const contributions = [
     {
+        project: "Cloud-Hypervisor",
+        role: "Contributor",
+        language: "Rust",
+        description:
+            "Refactored various functions to take &T or Arc<T> instead of &Arc<T> to remove double indirection, improving memory efficiency in the VMM.",
+        link: "https://github.com/cloud-hypervisor/cloud-hypervisor/pull/7667",
+        inProgress: true,
+    },
+    {
         project: "Tokio",
         role: "Contributor",
         language: "Rust",
@@ -52,6 +61,11 @@ export default function OpenSource() {
                                     {contrib.project}
                                     <GitPullRequest className="w-4 h-4 text-zinc-500 hover:text-blue-400 transition-colors" />
                                 </a>
+                                {contrib.inProgress && (
+                                    <span className="text-xs font-mono text-yellow-400 bg-yellow-900/20 border border-yellow-700/50 px-1.5 py-0.5 rounded">
+                                        In Progress
+                                    </span>
+                                )}
                             </h3>
                             <div className="flex items-center gap-3">
                                 <span className="text-xs font-mono text-zinc-500 border border-zinc-800 px-1.5 py-0.5 rounded">
