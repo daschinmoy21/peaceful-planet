@@ -7,6 +7,7 @@ const projects = [
     title: "Russel",
     description: "A cloud-native orchestrator that spawns ephemeral microVMs in milliseconds via Cloud Hypervisor. Combines VM isolation with container-like speed using QCOW2, I/O hotplugging, and zero-copy global cache. Built with Rust/Go and supports automatic public ingress.",
     tags: ["Rust", "Go", "Cloud Hypervisor", "KVM", "In Progress"],
+    demo: "https://russeldev.netlify.app/",
     image: "/wip.jpg",
   },
   {
