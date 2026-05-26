@@ -1,87 +1,139 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { GitPullRequest } from "lucide-react";
+import { GitPullRequest, Star, ExternalLink, ArrowUpRight } from "lucide-react";
 
-const contributions = [
-    {
-        project: "Cloud-Hypervisor",
-        role: "Contributor",
-        language: "Rust",
-        description:
-            "Refactored various functions to take &T or Arc<T> instead of &Arc<T> to remove double indirection, improving memory efficiency in the VMM.",
-        link: "https://github.com/cloud-hypervisor/cloud-hypervisor/pull/7667",
-        inProgress: true,
-    },
-    {
-        project: "Tokio",
-        role: "Contributor",
-        language: "Rust",
-        description:
-            "Enhanced the `#[tokio::main]` procedural macro to provide distinct, context-aware error messages for return type mismatches, significantly improving debugging for async entry points.",
-        link: "https://github.com/tokio-rs/tokio/pull/7856",
-    },
-    {
-        project: "Walker",
-        role: "Contributor",
-        language: "Rust",
-        description:
-            "Engineered an asynchronous image processing pipeline with caching and downscaling, eliminating UI thread blocking and ensuring smooth performance for the runner used in DHH's Omarchy.",
-        link: "https://github.com/abenz1267/walker/pull/561",
-    },
-];
+interface GHPR {
+  id: string;
+  title: string;
+  state: "open" | "closed";
+  html_url: string;
+  created_at: string;
+  closed_at: string | null;
+  merged_at: string | null;
+  number: number;
+  repo: {
+    name: string;
+    full_name: string;
+    html_url: string;
+    stars: number;
+  };
+}
 
-export default function OpenSource() {
-    return (
-        <motion.div
-            className="max-w-4xl mx-auto px-4 py-8 text-zinc-300"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-        >
-            <h1 className="text-3xl font-bold mb-8 ml-5 text-white w-fit">
-                Open Source
-            </h1>
+function getPRStatus(pr: GHPR) {
+  if (pr.merged_at) {
+    return {
+      label: "Merged",
+      color: "text-purple-400 border-purple-700/50 bg-purple-900/20",
+    };
+  }
+  if (pr.state === "open") {
+    return {
+      label: "Open",
+      color: "text-green-400 border-green-700/50 bg-green-900/20",
+    };
+  }
+  return {
+    label: "Closed",
+    color: "text-red-400 border-red-700/50 bg-red-900/20",
+  };
+}
 
-            <div className="space-y-6 ml-5">
-                {contributions.map((contrib, index) => (
-                    <div
-                        key={index}
-                        className="relative pl-8 border-l border-zinc-700/50 hover:border-zinc-500 transition-colors group"
+interface OpenSourceProps {
+  prs: GHPR[];
+  limit?: number;
+}
+
+export default function OpenSource({ prs, limit }: OpenSourceProps) {
+  const visiblePRs = limit ? prs.slice(0, limit) : prs;
+  const hasMore = limit && prs.length > limit;
+
+  return (
+    <motion.div
+      className="max-w-4xl mx-auto px-4 py-8 text-zinc-300"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+    >
+      <h1 className="text-3xl font-bold mb-8 ml-5 text-white w-fit">
+        Open Source
+      </h1>
+
+      {visiblePRs.length > 0 && (
+        <div className="ml-5 space-y-3">
+          {visiblePRs.map((pr, index) => {
+            const status = getPRStatus(pr);
+            return (
+              <motion.a
+                key={pr.id}
+                href={pr.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                className="group flex flex-col sm:flex-row sm:items-center gap-3 p-3.5 bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-600 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/30 transition-all duration-300 rounded-sm"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start gap-2 mb-1">
+                    <GitPullRequest className="w-4 h-4 text-zinc-500 shrink-0 mt-0.5" />
+                    <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-blue-400 transition-colors truncate font-mono">
+                      {pr.title}
+                    </h3>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-zinc-500 pl-6">
+                    <a
+                      href={pr.repo.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-zinc-400 hover:text-blue-400 transition-colors flex items-center gap-1"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-zinc-700 ring-4 ring-zinc-900 group-hover:bg-purple-500 transition-colors"></div>
-                        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between mb-1">
-                            <h3 className="text-lg font-semibold text-zinc-100 flex items-center gap-2">
-                                <a
-                                    href={contrib.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="hover:text-blue-400 transition-colors flex items-center gap-2"
-                                >
-                                    {contrib.project}
-                                    <GitPullRequest className="w-4 h-4 text-zinc-500 hover:text-blue-400 transition-colors" />
-                                </a>
-                                {contrib.inProgress && (
-                                    <span className="text-xs font-mono text-yellow-400 bg-yellow-900/20 border border-yellow-700/50 px-1.5 py-0.5 rounded">
-                                        In Progress
-                                    </span>
-                                )}
-                            </h3>
-                            <div className="flex items-center gap-3">
-                                <span className="text-xs font-mono text-zinc-500 border border-zinc-800 px-1.5 py-0.5 rounded">
-                                    {contrib.language}
-                                </span>
-                                <span className="text-sm font-mono text-white">
-                                    {contrib.role}
-                                </span>
-                            </div>
-                        </div>
-                        <p className="text-zinc-400 text-sm leading-relaxed">
-                            {contrib.description}
-                        </p>
-                    </div>
-                ))}
-            </div>
-        </motion.div>
-    );
+                      {pr.repo.full_name}
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                    <span className="flex items-center gap-1 text-yellow-500/80">
+                      <Star className="w-3 h-3" />
+                      {pr.repo.stars.toLocaleString()}
+                    </span>
+                    <span>#{pr.number}</span>
+                    <span>
+                      {new Date(pr.created_at).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
+                </div>
+                <span
+                  className={`shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-mono font-medium border ${status.color}`}
+                >
+                  {status.label}
+                </span>
+              </motion.a>
+            );
+          })}
+        </div>
+      )}
+
+      {prs.length === 0 && (
+        <div className="ml-5 text-center py-12 text-zinc-500 font-mono text-sm">
+          No open source contributions found.
+        </div>
+      )}
+
+      {hasMore && (
+        <div className="flex justify-center mt-10 ml-5">
+          <a
+            href="/oss"
+            className="group flex items-center gap-2 px-6 py-3 text-sm font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:text-white hover:-translate-y-0.5 transition-all rounded-sm font-mono"
+          >
+            View All PRs
+            <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+          </a>
+        </div>
+      )}
+    </motion.div>
+  );
 }

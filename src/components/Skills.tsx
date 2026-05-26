@@ -20,7 +20,6 @@ export default function Skills() {
     { name: "Docker", slug: "docker", color: "2496ED" },
     { name: "Linux", slug: "linux", color: "FCC624" },
     { name: "Git", slug: "git", color: "F05032" },
-    // { name: "Nix", slug: "nixos", color: "5277C3" },
     { name: "FFmpeg", slug: "ffmpeg", color: "007808" },
     { name: "WebRTC", slug: "webrtc", color: "FFFFFF" },
   ];
@@ -37,24 +36,28 @@ export default function Skills() {
 
       <div className="flex flex-wrap gap-4 ml-5">
         {technologies.map((tech) => (
-          <div
+          <motion.div
             key={tech.name}
-            className="flex items-center gap-2 px-4 py-2 bg-zinc-900/50 border border-zinc-800 rounded-sm hover:border-zinc-500 hover:bg-zinc-800/80 transition-all duration-300 cursor-default hover:shadow-lg hover:shadow-zinc-900/20"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.3 }}
+            className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900/50 border border-zinc-800/80 rounded-sm hover:border-zinc-600 hover:bg-zinc-800/60 hover:-translate-y-0.5 transition-all duration-300 cursor-default hover:shadow-lg hover:shadow-black/20 group"
           >
             <div className="w-5 h-5 flex items-center justify-center">
               <img
                 src={`https://cdn.simpleicons.org/${tech.slug}/${tech.color}`}
                 alt={tech.name}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain opacity-70 group-hover:opacity-100 transition-opacity"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";
                 }}
               />
             </div>
-            <span className="text-sm font-medium font-mono text-zinc-300 group-hover:text-zinc-100 transition-colors">
+            <span className="text-sm font-medium font-mono text-zinc-400 group-hover:text-zinc-100 transition-colors">
               {tech.name}
             </span>
-          </div>
+          </motion.div>
         ))}
       </div>
     </motion.div>

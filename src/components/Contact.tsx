@@ -9,7 +9,7 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 export default function Contact() {
   const socials = [
-    { 
+    {
       name: "GitHub",
       icon: faGithub,
       link: "https://github.com/daschinmoy21",
@@ -52,13 +52,19 @@ export default function Contact() {
               href={social.link}
               target="_blank"
               rel="noopener noreferrer"
-              className={`text-2xl text-zinc-500 transition-colors duration-300 ${social.color}`}
+              className={`text-2xl text-zinc-500 transition-all duration-300 hover:-translate-y-1 ${social.color}`}
               aria-label={social.name}
             >
               <FontAwesomeIcon icon={social.icon} />
             </a>
           ))}
         </div>
+      </div>
+
+      <div className="mt-16 ml-5 pt-8 border-t border-zinc-800/50">
+        <p className="text-center text-xs font-mono text-zinc-600">
+          Built with Astro, React & Tailwind. Deployed on Vercel.
+        </p>
       </div>
     </motion.div>
   );

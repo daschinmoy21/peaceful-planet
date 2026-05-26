@@ -96,21 +96,19 @@ export default function Projects({ limit }: ProjectsProps) {
             key={index}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
+            transition={{ duration: 0.5, delay: index * 0.08 }}
             viewport={{ once: true }}
-            className="group relative grid grid-cols-1 md:grid-cols-12 gap-6 p-4 bg-zinc-950 border border-zinc-800 hover:border-zinc-500 transition-all duration-300 hover:bg-zinc-900/50 rounded-sm"
+            className="group relative grid grid-cols-1 md:grid-cols-12 gap-6 p-4 bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-600 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 transition-all duration-300 rounded-sm"
           >
-            {/* Image Section - Spans 5 cols */}
-            <div className="md:col-span-5 relative overflow-hidden h-48 md:h-full min-h-[12rem] border border-zinc-800 rounded-sm">
-              <div className="absolute inset-0 bg-zinc-900/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
+            <div className="md:col-span-5 relative overflow-hidden h-48 md:h-full min-h-[12rem] border border-zinc-800/50 rounded-sm">
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/60 via-transparent to-transparent group-hover:from-zinc-950/30 transition-colors duration-500 z-10" />
               <img
                 src={project.image}
                 alt={project.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
             </div>
 
-            {/* Content Section - Spans 7 cols */}
             <div className="md:col-span-7 flex flex-col justify-between py-2">
               <div>
                 <div className="flex items-center justify-between mb-3">
@@ -123,7 +121,7 @@ export default function Projects({ limit }: ProjectsProps) {
                         href={project.demo}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 hover:text-white transition-colors rounded-sm"
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 hover:text-white hover:bg-zinc-800 transition-all rounded-sm"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                         Live
@@ -134,7 +132,7 @@ export default function Projects({ limit }: ProjectsProps) {
                         href={project.github}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 hover:text-white transition-colors rounded-sm"
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 hover:text-white hover:bg-zinc-800 transition-all rounded-sm"
                       >
                         <Github className="w-3.5 h-3.5" />
                         GitHub
@@ -151,10 +149,11 @@ export default function Projects({ limit }: ProjectsProps) {
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
-                    className={`px-3 py-1 text-xs font-medium border rounded-sm font-mono ${tag === "In Progress"
-                      ? "text-yellow-400 bg-yellow-900/20 border-yellow-700/50 shadow-[0_0_10px_rgba(234,179,8,0.1)]"
-                      : "text-zinc-400 bg-zinc-900 border-zinc-800"
-                      }`}
+                    className={`px-3 py-1 text-xs font-medium border rounded-sm font-mono transition-colors duration-300 ${
+                      tag === "In Progress"
+                        ? "text-yellow-400 bg-yellow-900/20 border-yellow-700/50 shadow-[0_0_10px_rgba(234,179,8,0.1)]"
+                        : "text-zinc-400 bg-zinc-900 border-zinc-800 group-hover:border-zinc-700"
+                    }`}
                   >
                     {tag}
                   </span>
@@ -169,7 +168,7 @@ export default function Projects({ limit }: ProjectsProps) {
         <div className="flex justify-center mt-12 ml-5">
           <a
             href="/projects"
-            className="group flex items-center gap-2 px-6 py-3 text-sm font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:text-white transition-all rounded-sm font-mono"
+            className="group flex items-center gap-2 px-6 py-3 text-sm font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:text-white hover:-translate-y-0.5 transition-all rounded-sm font-mono"
           >
             Show All Projects
             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

@@ -1,6 +1,8 @@
 ---
 import "@/styles/global.css";
 import Navbar from "@/components/Navbar";
+import ScrollProgress from "@/components/ScrollProgress";
+import BackToTop from "@/components/BackToTop";
 import { ClientRouter, fade } from "astro:transitions";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
@@ -27,12 +29,14 @@ import Analytics from '@vercel/analytics/astro'
 	</head>
 	<body>
 		<Analytics />
+		<ScrollProgress client:load />
 		<div transition:persist="navbar-wrapper">
 			<Navbar client:load />
 		</div>
-		<div class="pt-1" transition:animate={fade({ duration: "0.4s" })}>
+		<div class="pt-14" transition:animate={fade({ duration: "0.4s" })}>
 			<slot />
 		</div>
+		<BackToTop client:load />
 	</body>
 </html>
 

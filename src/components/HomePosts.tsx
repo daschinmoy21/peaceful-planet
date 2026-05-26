@@ -29,7 +29,7 @@ export default function HomePosts({ posts }: HomePostsProps) {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: index * 0.1 }}
                         viewport={{ once: true }}
-                        className="group flex flex-col justify-between p-6 bg-zinc-950 border border-zinc-800 hover:border-zinc-500 transition-all duration-300 hover:bg-zinc-900/50 rounded-xl h-full"
+                        className="group flex flex-col justify-between p-6 bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-600 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30 transition-all duration-300 rounded-sm h-full"
                     >
                         <div>
                             <div className="flex justify-between items-start mb-4">
@@ -53,7 +53,7 @@ export default function HomePosts({ posts }: HomePostsProps) {
                         </div>
 
                         <div className="flex items-center text-sm font-mono text-zinc-500 group-hover:text-zinc-300 transition-colors mt-auto">
-                            Read more <ArrowUpRight className="w-4 h-4 ml-1" />
+                            Read more <ArrowUpRight className="w-4 h-4 ml-1 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         </div>
                     </motion.a>
                 ))}
@@ -62,7 +62,7 @@ export default function HomePosts({ posts }: HomePostsProps) {
             <div className="flex justify-center mt-12 ml-5">
                 <a
                     href="/blog"
-                    className="group flex items-center gap-2 px-6 py-3 text-sm font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:text-white transition-all rounded-sm font-mono"
+                    className="group flex items-center gap-2 px-6 py-3 text-sm font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:text-white hover:-translate-y-0.5 transition-all rounded-sm font-mono"
                 >
                     Show All Posts
                     <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />

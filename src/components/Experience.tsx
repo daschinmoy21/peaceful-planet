@@ -29,11 +29,15 @@ export default function Experience() {
 
       <div className="space-y-6 ml-5">
         {experiences.map((exp, index) => (
-          <div
+          <motion.div
             key={index}
+            initial={{ opacity: 0, x: -15 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: index * 0.1 }}
             className="relative pl-8 border-l border-zinc-700/50 hover:border-zinc-500 transition-colors group"
           >
-            <div className="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-zinc-700 ring-4 ring-zinc-900 group-hover:bg-blue-500 transition-colors"></div>
+            <div className="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-zinc-700 ring-4 ring-zinc-900 group-hover:bg-blue-500 group-hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] transition-all duration-300" />
             <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between mb-1">
               <h3 className="text-lg font-semibold text-zinc-100">
                 {exp.role}
@@ -48,7 +52,7 @@ export default function Experience() {
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
         ))}
       </div>
     </motion.div>
