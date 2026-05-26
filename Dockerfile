@@ -1,11 +1,11 @@
-FROM node:22-alpine AS build
+FROM oven/bun:1 AS build
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY bun.lock package.json ./
+RUN bun install --frozen-lockfile
 COPY . .
 ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN=${GITHUB_TOKEN}
-RUN npm run build
+RUN bun run build
 
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
