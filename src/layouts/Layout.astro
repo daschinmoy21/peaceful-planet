@@ -1,8 +1,6 @@
 ---
 import "@/styles/global.css";
 import Navbar from "@/components/Navbar.astro";
-import ScrollProgress from "@/components/ScrollProgress.astro";
-import BackToTop from "@/components/BackToTop.astro";
 ---
 
 <!doctype html>
@@ -15,18 +13,32 @@ import BackToTop from "@/components/BackToTop.astro";
 		<title>Chinmoy Das</title>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="alternate" type="application/rss+xml" title="Chinmoy Das's Blog RSS Feed" href="/rss.xml" />
+		<link rel="alternate" type="application/atom+xml" title="Chinmoy Das's Blog Atom Feed" href="/atom.xml" />
 		<link
 			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap"
 			rel="stylesheet"
 		/>
+		<script is:inline>
+			const getTheme = () => {
+				if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+					return localStorage.getItem("theme");
+				}
+				return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+			};
+			const theme = getTheme();
+			if (theme === "light") {
+				document.documentElement.classList.add("light");
+			} else {
+				document.documentElement.classList.add("dark");
+			}
+		</script>
 	</head>
-	<body>
-		<ScrollProgress />
+	<body class="min-h-screen pb-16">
 		<Navbar />
-		<div class="pt-14">
+		<main class="max-w-2xl mx-auto px-6 py-6">
 			<slot />
-		</div>
-		<BackToTop />
+		</main>
 		<script is:inline>
 			function initReveal() {
 				const observer = new IntersectionObserver(
@@ -38,25 +50,16 @@ import BackToTop from "@/components/BackToTop.astro";
 							}
 						}
 					},
-					{ threshold: 0.1 }
+					{ threshold: 0.05 }
 				);
 				document.querySelectorAll("[data-reveal]").forEach((el) => {
-					const delay = el.getAttribute("data-reveal-delay");
-					if (delay) el.style.transitionDelay = delay + "ms";
 					observer.observe(el);
 				});
 			}
+			// Run on load
 			initReveal();
+			// Run on view transition swap if transitions are ever enabled
+			document.addEventListener("astro:after-swap", initReveal);
 		</script>
 	</body>
 </html>
-
-<style>
-	html {
-		scroll-behavior: smooth;
-	}
-	body {
-		margin: 0;
-		min-height: 100vh;
-	}
-</style>

@@ -150,3 +150,28 @@ async function _fetchGitHubPRs(): Promise<GitHubPR[]> {
   }
   return items;
 }
+
+let _contribCached: Promise<string> | null = null;
+
+export async function fetchGitHubContributionsTable(): Promise<string> {
+  if (_contribCached) return _contribCached;
+  const promise = (async () => {
+    try {
+      const res = await fetch("https://github.com/users/daschinmoy21/contributions");
+      if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+      const html = await res.text();
+      const tableMatch = html.match(/<table[^>]*ContributionCalendar-grid[^>]*>([\s\S]*?)<\/table>/);
+      if (!tableMatch) return "";
+      return tableMatch[0]
+        .replace(/\s*data-hydro-click="[^"]*"/g, "")
+        .replace(/\s*data-hydro-click-hmac="[^"]*"/g, "")
+        .replace(/\s*id="[^"]*"/g, "");
+    } catch (err) {
+      console.error("Failed to fetch GitHub contributions:", err);
+      return "";
+    }
+  })();
+  _contribCached = promise;
+  return promise;
+}
+

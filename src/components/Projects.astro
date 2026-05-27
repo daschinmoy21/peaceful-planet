@@ -8,152 +8,111 @@ const { limit } = Astro.props as Props;
 const projects = [
   {
     title: "Russel",
-    description: "A cloud-native orchestrator that spawns ephemeral microVMs in milliseconds via Cloud Hypervisor. Combines VM isolation with container-like speed using QCOW2, I/O hotplugging, and zero-copy global cache. Built with Rust/Go and supports automatic public ingress.",
-    tags: ["Rust", "Go", "Cloud Hypervisor", "KVM", "In Progress"],
-    demo: "https://russeldev.netlify.app/",
+    description: "A cloud-native orchestrator that spawns ephemeral microVMs in milliseconds via Cloud Hypervisor. Combines VM isolation with container-like speed using QCOW2 and hotplugging.",
+    status: "currently working on",
+    statusColor: "text-emerald-500",
+    linkText: "github.com/daschinmoy21/russel",
+    link: "https://github.com/daschinmoy21/russel",
     image: "/wip.jpg",
   },
   {
     title: "Logia",
-    description: "A modern notes app that transcribes lectures, in-built canvas and AI features. Available for Windows, Linux and MacOS.",
-    tags: ["React", "Rust", "Python", "TS", "C#"],
-    demo: "https://www.getlogia.online",
-    github: "https://www.github.com/daschinmoy21/logia",
+    description: "A modern notes app that transcribes lectures, featuring an in-built canvas and offline-first AI processing capabilities.",
+    linkText: "github.com/daschinmoy21/logia",
+    link: "https://www.github.com/daschinmoy21/logia",
     image: "/logia.webp",
   },
   {
     title: "Lightspeed",
-    description: "P2P file sharing utilizing TCP and QUIC for maximum throughput. Engineered to outperform existing solutions like LocalSend and QuickShare in local transfer benchmarks. (Benchmarks coming soon)",
-    tags: ["Rust", "Linux"],
-    github: "https://github.com/daschinmoy21/lightspeed",
+    description: "P2P local file sharing utilizing TCP and QUIC for maximum throughput, engineered to outperform existing local transfer solutions.",
+    linkText: "github.com/daschinmoy21/lightspeed",
+    link: "https://github.com/daschinmoy21/lightspeed",
     image: "/lightspeed.png",
   },
   {
     title: "LMS Discord Bot",
-    description: "This Discord bot automatically notifies users about updates on their college LMS, specifically focusing on assignments, labs, quizzes, and other important events while filtering out attendance-related notifications.",
-    tags: ["Typescript", "Python", "Discord.js", "Node.js"],
-    github: "https://github.com/daschinmoy21/LmsBot",
+    description: "A Discord bot that automatically monitors college LMS portals to notify users about assignment, lab, and quiz updates.",
+    linkText: "github.com/daschinmoy21/LmsBot",
+    link: "https://github.com/daschinmoy21/LmsBot",
     image: "/discord2.png",
   },
   {
     title: "Trello Clone",
-    description: "A Trello-like application with role based access, user authentication, shared workspaces, Kanban boards, real-time updates, and board chat functionality.",
-    tags: ["PostgreSQL", "FastAPI", "React", "Socket.IO", "Docker"],
-    github: "https://github.com/daschinmoy21/trello",
-    image: "/trello2.png",
+    description: "A fullstack Trello-like application with role-based access control, Kanban boards, real-time board updates, and integrated board chat.",
+    linkText: "github.com/daschinmoy21/trello",
+    link: "https://github.com/daschinmoy21/trello",
+    image: "/trello.png",
   },
   {
     title: "BlockShare",
-    description: "A decentralized file-sharing application combining blockchain technology with IPFS for secure, distributed file storage and ownership tracking.",
-    tags: ["React", "TypeScript", "Vite", "Ethers.js", "Express.js", "MongoDB", "Solidity", "Hardhat", "IPFS", "Node.js"],
-    github: "https://github.com/daschinmoy21/BlockShare",
+    description: "A decentralized file-sharing application combining blockchain technology with IPFS for secure, distributed file ownership tracking.",
+    linkText: "github.com/daschinmoy21/BlockShare",
+    link: "https://github.com/daschinmoy21/BlockShare",
     image: "/web3-1.png",
   },
   {
     title: "CipherPress",
-    description: "A decentralized news platform built with React, IPFS, and Ethereum. Articles are stored on IPFS and indexed on the blockchain, creating a censorship-resistant news platform.",
-    tags: ["React", "TypeScript", "Vite", "Solidity", "Hardhat", "IPFS", "Ethereum", "ethers.js", "MetaMask"],
-    github: "https://github.com/daschinmoy21/CipherPress",
+    description: "A censorship-resistant decentralized news platform where articles are hosted on IPFS and indexed on-chain.",
+    linkText: "github.com/daschinmoy21/CipherPress",
+    link: "https://github.com/daschinmoy21/CipherPress",
     image: "/web3-1.png",
-  },
+  }
 ];
 
 const visibleProjects = limit ? projects.slice(0, limit) : projects;
 ---
 
-<div data-reveal class="max-w-4xl mx-auto px-4 py-8 text-zinc-300">
-  <div class="flex items-center gap-3 mb-8 ml-5">
-    <h1 class="text-3xl font-bold text-white">Projects</h1>
-    {!limit && (
-      <a
-        href="/projects"
-        class="text-zinc-400 hover:text-white transition-colors p-1 hover:bg-zinc-800/50 rounded-lg"
-        aria-label="View all projects"
-      >
-        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" x2="17" y1="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+<div class="max-w-2xl mx-auto py-6">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xs font-mono font-bold tracking-widest text-zinc-500 uppercase">Projects</h2>
+    {limit && (
+      <a href="/projects" class="text-xs font-mono text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors duration-200 uppercase tracking-wider">
+        View all →
       </a>
     )}
   </div>
 
-  <div class="flex flex-col gap-6 ml-5">
-    {visibleProjects.map((project, index) => (
-      <div
-        data-reveal
-        data-reveal-delay={index * 80}
-        class="group relative grid grid-cols-1 md:grid-cols-12 gap-6 p-4 bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-600 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 transition-all duration-300 rounded-sm"
-      >
-        <div class="md:col-span-5 relative overflow-hidden h-48 md:h-full min-h-[12rem] border border-zinc-800/50 rounded-sm">
-          <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/60 via-transparent to-transparent group-hover:from-zinc-950/30 transition-colors duration-500 z-10"></div>
-          <img
-            src={project.image}
-            alt={project.title}
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          />
-        </div>
-
-        <div class="md:col-span-7 flex flex-col justify-between py-2">
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors font-mono">
-                {project.title}
-              </h3>
-              <div class="flex gap-3">
-                {project.demo && (
-                  <a
-                    href={project.demo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 hover:text-white hover:bg-zinc-800 transition-all rounded-sm"
-                  >
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
-                    Live
-                  </a>
-                )}
-                {project.github && (
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 hover:text-white hover:bg-zinc-800 transition-all rounded-sm"
-                  >
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                    GitHub
-                  </a>
-                )}
-              </div>
-            </div>
-            <p class="text-zinc-400 leading-relaxed mb-6 font-mono text-sm">
-              {project.description}
-            </p>
-          </div>
-
-          <div class="flex flex-wrap gap-2 mt-auto">
-            {project.tags.map((tag) => (
-              <span
-                class={`px-3 py-1 text-xs font-medium border rounded-sm font-mono transition-colors duration-300 ${
-                  tag === "In Progress"
-                    ? "text-yellow-400 bg-yellow-900/20 border-yellow-700/50"
-                    : "text-zinc-400 bg-zinc-900 border-zinc-800 group-hover:border-zinc-700"
-                }`}
-              >
-                {tag}
+  <div class="flex flex-col gap-8">
+    {visibleProjects.map((project) => (
+      <div class="flex flex-col sm:flex-row gap-5 items-start animate-fade-in-up">
+        {project.image && (
+          <a 
+            href={project.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full sm:w-28 aspect-video rounded-sm overflow-hidden border border-zinc-200 dark:border-zinc-900 bg-zinc-900 shrink-0 block"
+          >
+            <img 
+              src={project.image} 
+              alt={project.title} 
+              class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
+            />
+          </a>
+        )}
+        <div class="flex-1 min-w-0 flex flex-col gap-1.5">
+          <div class="flex items-center gap-2.5">
+            <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight font-sans">
+              {project.title}
+            </h3>
+            {project.status && (
+              <span class={`text-[10px] font-mono font-medium uppercase tracking-wider ${project.statusColor || 'text-zinc-500'}`}>
+                ● {project.status}
               </span>
-            ))}
+            )}
           </div>
+          <p class="text-sm text-zinc-400 font-sans leading-relaxed">
+            {project.description}
+          </p>
+          <a 
+            href={project.link} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="text-xs font-mono text-zinc-500 hover:text-zinc-950 dark:hover:text-white transition-colors duration-200 w-fit flex items-center gap-1 mt-0.5 group"
+          >
+            <span class="text-zinc-700 transition-colors group-hover:text-zinc-400 group-hover:dark:text-zinc-300">→</span> {project.linkText}
+          </a>
         </div>
       </div>
     ))}
   </div>
-
-  {limit && (
-    <div class="flex justify-center mt-12 ml-5">
-      <a
-        href="/projects"
-        class="group flex items-center gap-2 px-6 py-3 text-sm font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:text-white hover:-translate-y-0.5 transition-all rounded-sm font-mono"
-      >
-        Show All Projects
-        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </a>
-    </div>
-  )}
 </div>

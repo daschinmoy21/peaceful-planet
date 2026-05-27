@@ -7,5 +7,7 @@ const prs = await fetchGitHubPRs().catch(() => []);
 ---
 
 <Layout>
-  <OpenSource prs={prs} />
+  <div class="py-6">
+    <OpenSource prs={prs} graphPosition="top" />
+  </div>
 </Layout>

@@ -1,71 +1,48 @@
 ---
-import { themeConfig } from "@/chiri-config";
 import "@/styles/global.css";
-import { ClientRouter } from "astro:transitions";
-import ThemeManager from "@/components/chiri/ui/ThemeManager.astro";
-import FaviconThemeSwitcher from "@/components/chiri/ui/FaviconThemeSwitcher.astro";
-import TransitionWrapper from "@/components/chiri/layout/TransitionWrapper.astro";
 import Navbar from "@/components/Navbar.astro";
 import type { LayoutProps } from "@/types";
 
 type Props = LayoutProps;
 
 const { type = "page" } = Astro.props;
-const language = themeConfig.site.language || "en-US";
-const contentWidth = themeConfig.general.contentWidth;
-const fadeAnimation = themeConfig.general.fadeAnimation;
-const widthValue = Math.min(parseFloat(contentWidth), 50);
-const shouldUseCustomWidth = widthValue > 25;
-const finalWidth = shouldUseCustomWidth ? `${widthValue}rem` : "25rem";
+const language = "en-US";
 ---
 
 <html lang={language}>
   <head>
-    <ThemeManager />
-    {fadeAnimation && <ClientRouter />}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/png" href="/moon.jpg" />
+    <meta name="generator" content={Astro.generator} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="alternate" type="application/rss+xml" title="Chinmoy Das's Blog RSS Feed" href="/rss.xml" />
+    <link rel="alternate" type="application/atom+xml" title="Chinmoy Das's Blog Atom Feed" href="/atom.xml" />
     <link
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap"
       rel="stylesheet"
     />
+    <script is:inline>
+      const getTheme = () => {
+        if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+          return localStorage.getItem("theme");
+        }
+        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      };
+      const theme = getTheme();
+      if (theme === "light") {
+        document.documentElement.classList.add("light");
+      } else {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
     <slot name="head" />
   </head>
-  <body
-    data-centered={themeConfig.general.centeredLayout}
-    style={`
-      max-width: ${finalWidth};
-      ${shouldUseCustomWidth ? `--content-width: ${widthValue}rem;` : ""}
-    `}
-    class="pt-20"
-  >
-      <Navbar />
-    <FaviconThemeSwitcher />
-
-    {
-      fadeAnimation ? (
-        <TransitionWrapper type={type} class="layout-wrapper">
-          <slot />
-        </TransitionWrapper>
-      ) : (
-        <div class="layout-wrapper">
-          <slot />
-        </div>
-      )
-    }
+  <body class="min-h-screen pb-16">
+    <Navbar />
+    <main class="max-w-2xl mx-auto px-6 py-6">
+      <slot />
+    </main>
   </body>
 </html>
-
-<style is:global>
-  .layout-wrapper {
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100vh - 7.5rem);
-  }
-
-  @media (max-width: 768px) {
-    .layout-wrapper {
-      min-height: calc(100vh - 5.5rem);
-    }
-  }
-</style>
