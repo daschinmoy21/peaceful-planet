@@ -63,7 +63,7 @@ export default function Contact() {
 
       <div className="mt-16 ml-5 pt-8 border-t border-zinc-800/50">
         <p className="text-center text-xs font-mono text-zinc-600">
-          Built with Astro, React & Tailwind. Deployed on Vercel.
+          Built with Astro, React & Tailwind.
         </p>
       </div>
     </motion.div>

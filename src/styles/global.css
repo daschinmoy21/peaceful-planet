@@ -16,10 +16,6 @@ body {
     linear-gradient(180deg, rgba(9, 9, 11, 0) 0%, #09090b 100%);
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
