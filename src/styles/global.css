@@ -133,12 +133,9 @@ html.light {
 body {
   background-color: var(--bg-color) !important;
   color: var(--text-color) !important;
-  @apply antialiased min-h-screen relative font-sans transition-colors duration-200;
-}
-
-html.light body {
   font-size: 1.025rem;
   font-weight: 500;
+  @apply antialiased min-h-screen relative font-sans transition-colors duration-200;
 }
 
 /* Force headings to heading color */
