@@ -15,7 +15,7 @@ export interface GitHubPR {
   };
 }
 
-const MIN_STARS = 100;
+const MIN_STARS = 0;
 
 const GRAPHQL_QUERY = `
 query {
@@ -174,4 +174,3 @@ export async function fetchGitHubContributionsTable(): Promise<string> {
   _contribCached = promise;
   return promise;
 }
-
