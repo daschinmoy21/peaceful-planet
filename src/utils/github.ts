@@ -41,7 +41,16 @@ query {
   }
 }`;
 
+let _cached: Promise<GitHubPR[]> | null = null;
+
 export async function fetchGitHubPRs(): Promise<GitHubPR[]> {
+  if (import.meta.env.DEV && _cached) return _cached;
+  const promise = _fetchGitHubPRs();
+  if (import.meta.env.DEV) _cached = promise;
+  return promise;
+}
+
+async function _fetchGitHubPRs(): Promise<GitHubPR[]> {
   const token = import.meta.env.GITHUB_TOKEN as string | undefined;
 
   const headers: Record<string, string> = {

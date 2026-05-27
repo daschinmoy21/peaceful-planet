@@ -1,0 +1,19 @@
+<button
+  id="back-to-top"
+  class="fixed bottom-6 right-6 z-50 p-3 bg-zinc-900/90 backdrop-blur-sm border border-zinc-700/50 text-zinc-400 rounded-full shadow-lg shadow-black/20 transition-all duration-300 opacity-0 pointer-events-none"
+  aria-label="Back to top"
+>
+  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m18 15-6-6-6 6"/>
+  </svg>
+</button>
+
+<script>
+  const btn = document.getElementById("back-to-top")!;
+  window.addEventListener("scroll", () => {
+    const show = window.scrollY > 400;
+    btn.style.opacity = show ? "1" : "0";
+    btn.style.pointerEvents = show ? "auto" : "none";
+  }, { passive: true });
+  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+</script>

@@ -1,0 +1,17 @@
+<div class="fixed top-0 left-0 right-0 h-[2px] z-[60] pointer-events-none">
+  <div
+    id="scroll-progress-bar"
+    class="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 will-change-[width]"
+    style="width: 0%"
+  ></div>
+</div>
+
+<script>
+  const bar = document.getElementById("scroll-progress-bar")!;
+  const update = () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = docHeight > 0 ? `${(scrollTop / docHeight) * 100}%` : "0%";
+  };
+  window.addEventListener("scroll", update, { passive: true });
+</script>

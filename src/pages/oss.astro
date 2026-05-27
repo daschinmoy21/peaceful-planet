@@ -1,11 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import OpenSource from "../components/OpenSource";
+import OpenSource from "../components/OpenSource.astro";
 import { fetchGitHubPRs } from "@/utils/github";
 
 const prs = await fetchGitHubPRs().catch(() => []);
 ---
 
 <Layout>
-  <OpenSource client:load prs={prs} />
+  <OpenSource prs={prs} />
 </Layout>
