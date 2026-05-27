@@ -35,6 +35,84 @@ const language = "en-US";
       }
     </script>
     <slot name="head" />
+  <style is:global>
+    :root {
+      --bg-color: #050505;
+      --text-color: #a1a1aa;
+      --text-heading: #ffffff;
+      --text-muted: #52525b;
+      --text-mono: #71717a;
+      --border-color: #18181b;
+      --code-bg: #09090b;
+      --code-border: #18181b;
+      --nav-bg-rgb: 5, 5, 5;
+      --text-primary: rgba(255, 255, 255, 0.9);
+      --text-secondary: rgba(255, 255, 255, 0.45);
+      --text-tertiary: rgba(255, 255, 255, 0.24);
+      --border: rgba(255, 255, 255, 0.1);
+      --astro-code-foreground: #abb2bf;
+      --astro-code-background: #09090b;
+      --astro-code-token-constant: #d19a66;
+      --astro-code-token-string: #98c379;
+      --astro-code-token-comment: #5c6370;
+      --astro-code-token-keyword: #c678dd;
+      --astro-code-token-parameter: #e06c75;
+      --astro-code-token-function: #61afef;
+      --astro-code-token-string-expression: #98c379;
+      --astro-code-token-punctuation: #abb2bf;
+      --astro-code-token-link: #56b6c2;
+      --shiki-color-text: #abb2bf;
+      --shiki-color-background: #09090b;
+      --shiki-token-constant: #d19a66;
+      --shiki-token-string: #98c379;
+      --shiki-token-comment: #5c6370;
+      --shiki-token-keyword: #c678dd;
+      --shiki-token-parameter: #e06c75;
+      --shiki-token-function: #61afef;
+      --shiki-token-string-expression: #98c379;
+      --shiki-token-punctuation: #abb2bf;
+      --shiki-token-link: #56b6c2;
+    }
+
+    :root.light {
+      --bg-color: #fafafa;
+      --text-color: #18181b;
+      --text-heading: #000000;
+      --text-muted: #a1a1aa;
+      --text-mono: #71717a;
+      --border-color: #e4e4e7;
+      --code-bg: #f4f4f5;
+      --code-border: #e4e4e7;
+      --nav-bg-rgb: 250, 250, 250;
+      --text-primary: rgba(0, 0, 0, 0.85);
+      --text-secondary: rgba(0, 0, 0, 0.45);
+      --text-tertiary: rgba(0, 0, 0, 0.24);
+      --border: rgba(0, 0, 0, 0.1);
+      --astro-code-foreground: #383a42;
+      --astro-code-background: #f4f4f5;
+      --astro-code-token-constant: #986801;
+      --astro-code-token-string: #50a14f;
+      --astro-code-token-comment: #a0a1a7;
+      --astro-code-token-keyword: #a626a4;
+      --astro-code-token-parameter: #e45649;
+      --astro-code-token-function: #4078f2;
+      --astro-code-token-string-expression: #50a14f;
+      --astro-code-token-punctuation: #383a42;
+      --astro-code-token-link: #0184bc;
+      --shiki-color-text: #383a42;
+      --shiki-color-background: #f4f4f5;
+      --shiki-token-constant: #986801;
+      --shiki-token-string: #50a14f;
+      --shiki-token-comment: #a0a1a7;
+      --shiki-token-keyword: #a626a4;
+      --shiki-token-parameter: #e45649;
+      --shiki-token-function: #4078f2;
+      --shiki-token-string-expression: #50a14f;
+      --shiki-token-punctuation: #383a42;
+      --shiki-token-link: #0184bc;
+    }
+  </style>
+
   </head>
   <body class="min-h-screen pb-16">
     <Navbar />
