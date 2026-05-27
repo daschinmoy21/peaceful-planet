@@ -31,10 +31,16 @@ const hasMore = limit && prs.length > (limit ?? 0);
     Open Source
   </h1>
 
+  {prs.length === 0 && (
+    <div class="ml-5 text-center py-12 text-zinc-500 font-mono text-sm">
+      No open source contributions found.
+    </div>
+  )}
+
   {visiblePRs.length > 0 && (
-    <div class="ml-5 space-y-3">
+    <div class="ml-5 space-y-3" id="oss-pr-list">
       {visiblePRs.map((pr, index) => {
-        const merged = pr.merged_at;
+        const merged = !!pr.merged_at;
         const open = pr.state === "open";
         const statusLabel = merged ? "Merged" : open ? "Open" : "Closed";
         const statusColor = merged
@@ -42,14 +48,19 @@ const hasMore = limit && prs.length > (limit ?? 0);
           : open
             ? "text-green-400 border-green-700/50 bg-green-900/20"
             : "text-red-400 border-red-700/50 bg-red-900/20";
+        const date = new Date(pr.created_at).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
         return (
-          <a
-            href={pr.html_url}
-            target="_blank"
-            rel="noopener noreferrer"
+          <div
             data-reveal
             data-reveal-delay={index * 50}
-            class="group flex flex-col sm:flex-row sm:items-center gap-3 p-3.5 bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-600 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/30 transition-all duration-300 rounded-sm"
+            class="group flex flex-col sm:flex-row sm:items-center gap-3 p-3.5 bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-600 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/30 transition-all duration-300 rounded-sm cursor-pointer"
+            role="link"
+            tabindex="0"
+            data-href={pr.html_url}
           >
             <div class="flex-1 min-w-0">
               <div class="flex items-start gap-2 mb-1">
@@ -66,6 +77,7 @@ const hasMore = limit && prs.length > (limit ?? 0);
                   target="_blank"
                   rel="noopener noreferrer"
                   class="text-zinc-400 hover:text-blue-400 transition-colors flex items-center gap-1"
+                  onclick="event.stopPropagation()"
                 >
                   {pr.repo.full_name}
                   <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -79,27 +91,15 @@ const hasMore = limit && prs.length > (limit ?? 0);
                   {pr.repo.stars.toLocaleString()}
                 </span>
                 <span>#{pr.number}</span>
-                <span>
-                  {new Date(pr.created_at).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </span>
+                <span>{date}</span>
               </div>
             </div>
             <span class={`shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-mono font-medium border ${statusColor}`}>
               {statusLabel}
             </span>
-          </a>
+          </div>
         );
       })}
-    </div>
-  )}
-
-  {prs.length === 0 && (
-    <div class="ml-5 text-center py-12 text-zinc-500 font-mono text-sm">
-      No open source contributions found.
     </div>
   )}
 
@@ -117,3 +117,19 @@ const hasMore = limit && prs.length > (limit ?? 0);
     </div>
   )}
 </div>
+
+<script>
+  document.querySelectorAll("#oss-pr-list [data-href]").forEach((el) => {
+    el.addEventListener("click", () => {
+      const href = el.getAttribute("data-href");
+      if (href) window.open(href, "_blank", "noopener");
+    });
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        const href = el.getAttribute("data-href");
+        if (href) window.open(href, "_blank", "noopener");
+      }
+    });
+  });
+</script>
