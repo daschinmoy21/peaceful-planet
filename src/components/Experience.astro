@@ -1,41 +1,40 @@
 ---
 const experiences = [
   {
-    company: "Contract Developer",
-    role: "Freelance",
+    company: "Freelance",
+    role: "Contract Developer",
     period: "2025 - Present",
     description: [
-      "Built end-to-end websites for various clients using Astro, React, TS and handled deployment ensuring high uptime under traffic",
-      "Designed and deployed a production website used by large user base",
-      "Implemented backend APIs for registration, contact, content management",
+      "Designed, developed, and deployed a high-performance website for a non-governmental organization (NGO) using Astro and TypeScript",
+      "Optimized build pipeline and static site generation, achieving 100/100 Lighthouse performance and accessibility scores",
+      "Set up streamlined content editing workflows and integrated hosting, enabling non-technical staff to easily publish updates"
     ],
   },
 ];
 ---
 
-<div data-reveal class="max-w-4xl mx-auto px-4 py-8 text-zinc-300">
-  <h1 class="text-3xl font-bold mb-8 ml-5 text-white w-fit">
-    Experience
-  </h1>
+<div class="max-w-2xl mx-auto py-6">
+  <h2 class="text-xs font-mono font-bold tracking-widest text-zinc-500 uppercase mb-6">Experience</h2>
 
-  <div class="space-y-6 ml-5">
-    {experiences.map((exp, index) => (
-      <div
-        data-reveal
-        data-reveal-delay={index * 100}
-        class="relative pl-8 border-l border-zinc-700/50 hover:border-zinc-500 transition-colors group"
-      >
-        <div class="timeline-dot absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-zinc-700 ring-4 ring-zinc-900 group-hover:bg-blue-500 group-hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] transition-all duration-300"></div>
-        <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between mb-1">
-          <h3 class="text-lg font-semibold text-zinc-100">
-            {exp.role}
-          </h3>
-          <span class="text-sm font-mono text-white">{exp.period}</span>
+  <div class="flex flex-col gap-6">
+    {experiences.map((exp) => (
+      <div class="flex flex-col gap-2 animate-fade-in-up">
+        <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
+          <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+            <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight font-sans">
+              {exp.role}
+            </h3>
+            <span class="text-xs font-mono text-zinc-500">at {exp.company}</span>
+          </div>
+          <span class="text-xs font-mono text-zinc-400 shrink-0">{exp.period}</span>
         </div>
-        <div class="text-md text-blue-400 mb-2">{exp.company}</div>
-        <ul class="list-disc list-outside ml-4 space-y-1">
-          {exp.description.map((item, i) => (
-            <li class="text-zinc-400 text-sm leading-relaxed">{item}</li>
+        
+        <ul class="flex flex-col gap-1.5 font-mono text-xs text-zinc-400 mt-1 pl-1">
+          {exp.description.map((item) => (
+            <li class="flex items-start gap-2.5 leading-relaxed">
+              <span class="text-zinc-600 shrink-0 select-none">→</span>
+              <span>{item}</span>
+            </li>
           ))}
         </ul>
       </div>

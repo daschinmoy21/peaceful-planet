@@ -16,11 +16,11 @@ const prs = await fetchGitHubPRs().catch(() => []);
 
 <Layout>
 	<Header />
-
 	<Skills />
-	<OpenSource prs={prs} limit={6} />
-	<Experience />
 	<Projects limit={3} />
+	<OpenSource prs={prs} limit={3} />
+	<Experience />
 	<HomePosts posts={posts.slice(0, 3)} />
+	<div class="border-t border-zinc-950 my-6"></div>
 	<Contact />
 </Layout>

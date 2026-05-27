@@ -1,24 +1,183 @@
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-latin-300-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-latin-700-normal.woff2') format('woff2');
+}
+
 @import "tailwindcss";
 @plugin "daisyui";
 
 @theme {
   --font-sans: "Space Grotesk", sans-serif;
-  --font-mono: "Space Grotesk", monospace;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+:root {
+  /* Default Dark Theme Variables */
+  --bg-color: #050505;
+  --text-color: #a1a1aa; /* zinc-400 */
+  --text-heading: #ffffff;
+  --text-muted: #52525b; /* zinc-600 */
+  --text-mono: #71717a; /* zinc-500 */
+  --border-color: #18181b; /* zinc-900 */
+  --code-bg: #09090b;
+  --code-border: #18181b;
+  --nav-bg-rgb: 5, 5, 5;
+
+  /* Legacy Chiri variables compatibility */
+  --text-primary: rgba(255, 255, 255, 0.9);
+  --text-secondary: rgba(255, 255, 255, 0.45);
+  --text-tertiary: rgba(255, 255, 255, 0.24);
+  --border: rgba(255, 255, 255, 0.1);
+
+  /* Shiki Syntax Highlighting Variables (Dark - Atom One Dark / One Dark Pro) */
+  --astro-code-foreground: #abb2bf;
+  --astro-code-background: #09090b;
+  --astro-code-token-constant: #d19a66;
+  --astro-code-token-string: #98c379;
+  --astro-code-token-comment: #5c6370;
+  --astro-code-token-keyword: #c678dd;
+  --astro-code-token-parameter: #e06c75;
+  --astro-code-token-function: #61afef;
+  --astro-code-token-string-expression: #98c379;
+  --astro-code-token-punctuation: #abb2bf;
+  --astro-code-token-link: #56b6c2;
+
+  --shiki-color-text: #abb2bf;
+  --shiki-color-background: #09090b;
+  --shiki-token-constant: #d19a66;
+  --shiki-token-string: #98c379;
+  --shiki-token-comment: #5c6370;
+  --shiki-token-keyword: #c678dd;
+  --shiki-token-parameter: #e06c75;
+  --shiki-token-function: #61afef;
+  --shiki-token-string-expression: #98c379;
+  --shiki-token-punctuation: #abb2bf;
+  --shiki-token-link: #56b6c2;
+}
+
+html.light {
+  /* Light Theme Variables */
+  --bg-color: #fafafa;
+  --text-color: #27272a; /* zinc-800 */
+  --text-heading: #000000;
+  --text-muted: #a1a1aa; /* zinc-400 */
+  --text-mono: #71717a; /* zinc-500 */
+  --border-color: #e4e4e7; /* zinc-200 */
+  --code-bg: #f4f4f5; /* zinc-100 */
+  --code-border: #e4e4e7;
+  --nav-bg-rgb: 250, 250, 250;
+
+  /* Legacy Chiri variables compatibility */
+  --text-primary: rgba(0, 0, 0, 0.85);
+  --text-secondary: rgba(0, 0, 0, 0.45);
+  --text-tertiary: rgba(0, 0, 0, 0.24);
+  --border: rgba(0, 0, 0, 0.1);
+
+  /* Shiki Syntax Highlighting Variables (Light - Atom One Light inspired) */
+  --astro-code-foreground: #383a42;
+  --astro-code-background: #f4f4f5;
+  --astro-code-token-constant: #986801;
+  --astro-code-token-string: #50a14f;
+  --astro-code-token-comment: #a0a1a7;
+  --astro-code-token-keyword: #a626a4;
+  --astro-code-token-parameter: #e45649;
+  --astro-code-token-function: #4078f2;
+  --astro-code-token-string-expression: #50a14f;
+  --astro-code-token-punctuation: #383a42;
+  --astro-code-token-link: #0184bc;
+
+  --shiki-color-text: #383a42;
+  --shiki-color-background: #f4f4f5;
+  --shiki-token-constant: #986801;
+  --shiki-token-string: #50a14f;
+  --shiki-token-comment: #a0a1a7;
+  --shiki-token-keyword: #a626a4;
+  --shiki-token-parameter: #e45649;
+  --shiki-token-function: #4078f2;
+  --shiki-token-string-expression: #50a14f;
+  --shiki-token-punctuation: #383a42;
+  --shiki-token-link: #0184bc;
 }
 
 body {
-  @apply bg-zinc-900 text-zinc-300 font-mono antialiased min-h-screen relative;
-
-  background-image:
-    radial-gradient(circle at 50% 0%,
-      rgba(39, 39, 42, 0.4) 0%,
-      transparent 60%),
-    linear-gradient(180deg, rgba(9, 9, 11, 0) 0%, #09090b 100%);
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  @apply antialiased min-h-screen relative font-sans transition-colors duration-200;
 }
 
+/* Force headings to heading color */
+h1, h2, h3, h4, h5, h6, .text-white, .text-zinc-100, .text-zinc-200 {
+  color: var(--text-heading) !important;
+  @apply transition-colors duration-200;
+}
+
+/* Force paragraphs and text-zinc-400 to text-color */
+p, .text-zinc-300, .text-zinc-400 {
+  color: var(--text-color) !important;
+  @apply transition-colors duration-200;
+}
+
+/* Force borders to border-color */
+.border-zinc-900, .border-zinc-800, .border-zinc-950, .border-t, .border-b, .border {
+  border-color: var(--border-color) !important;
+  @apply transition-colors duration-200;
+}
+
+/* Force monospace helper text to text-mono */
+.text-zinc-500, .text-zinc-600 {
+  color: var(--text-mono) !important;
+  @apply transition-colors duration-200;
+}
+
+/* Force code blocks & containers to code-bg & border-color */
+code, pre, .bg-zinc-950, .bg-\[\#09090b\], .bg-zinc-900\/50 {
+  background-color: var(--code-bg) !important;
+  border-color: var(--code-border) !important;
+  @apply transition-all duration-200;
+}
+
+/* Dev server navigation bar */
+nav {
+  background-color: rgba(var(--nav-bg-rgb), 0.8) !important;
+  border-color: var(--border-color) !important;
+  @apply transition-all duration-200;
+}
+
+/* Global scrollbars style */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -26,29 +185,29 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(63, 63, 70, 0.6);
-  border-radius: 3px;
+  background: rgba(63, 63, 70, 0.4);
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(82, 82, 91, 0.8);
+  background: rgba(82, 82, 91, 0.6);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(63, 63, 70, 0.6) transparent;
+  scrollbar-color: rgba(63, 63, 70, 0.4) transparent;
 }
 
 ::selection {
-  background: rgba(59, 130, 246, 0.3);
+  background: rgba(255, 255, 255, 0.15);
   color: #fff;
 }
 
-/* Entrance reveal animations (replaces Framer Motion whileInView) */
+/* Entrance reveal animations */
 [data-reveal] {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  transform: translateY(4px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
 }
 
 [data-reveal].revealed {
@@ -56,11 +215,10 @@ body {
   transform: translateY(0);
 }
 
-/* Header entrance (replaces Framer Motion initial/animate) */
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -69,5 +227,83 @@ body {
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.5s ease-out forwards;
+  animation: fade-in-up 0.4s ease-out forwards;
 }
+
+/* GitHub calendar table grid styling */
+.ContributionCalendar-grid {
+  width: max-content;
+  margin: 0 auto;
+  border-collapse: separate !important;
+  border-spacing: 2px !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.ContributionCalendar-grid tr,
+.ContributionCalendar-grid td,
+.ContributionCalendar-grid th {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.ContributionCalendar-grid .sr-only {
+  display: none !important;
+}
+
+.ContributionCalendar-day {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 1px !important;
+}
+
+
+:root {
+  --contrib-level-0: #101012;
+  --contrib-level-1: #0e4429;
+  --contrib-level-2: #006d32;
+  --contrib-level-3: #26a641;
+  --contrib-level-4: #39d353;
+}
+
+html.light {
+  --contrib-level-0: #ebedf0;
+  --contrib-level-1: #9be9a8;
+  --contrib-level-2: #40c463;
+  --contrib-level-3: #30a14e;
+  --contrib-level-4: #216e39;
+}
+
+.ContributionCalendar-day[data-level="0"] { background-color: var(--contrib-level-0) !important; }
+.ContributionCalendar-day[data-level="1"] { background-color: var(--contrib-level-1) !important; }
+.ContributionCalendar-day[data-level="2"] { background-color: var(--contrib-level-2) !important; }
+.ContributionCalendar-day[data-level="3"] { background-color: var(--contrib-level-3) !important; }
+.ContributionCalendar-day[data-level="4"] { background-color: var(--contrib-level-4) !important; }
+
+.ContributionCalendar-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 9px !important;
+  color: var(--text-mono) !important;
+}
+
+/* Hide extra headings/info in github grid if they exist */
+.ContributionCalendar h2, .ContributionCalendar .float-left {
+  display: none !important;
+}
+.github-calendar-wrapper {
+  background-color: transparent !important;
+}
+.graph-before-activity-overview {
+  border: none !important;
+  padding: 0 !important;
+}
+.github-calendar-card {
+  background-color: transparent !important;
+  border-color: var(--border) !important;
+}
+
+
+
