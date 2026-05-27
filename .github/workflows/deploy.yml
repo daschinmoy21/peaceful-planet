@@ -1,0 +1,33 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Deploy to VPS
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: dist/
+          remote_path: /home/crimxnhaze/peaceful-planet
+          remote_host: 178.105.135.161
+          remote_user: crimxnhaze
+          remote_key: ${{ secrets.VPS_SSH_KEY }}
+          remote_key_pass: ""
+          known_hosts: |
+            178.105.135.161 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINzZr38L3ZE5OJzl/C+Cdn9eQDcXnnE5wdDvXjc2w0ws
