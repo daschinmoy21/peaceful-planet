@@ -3,7 +3,6 @@ import "@/styles/global.css";
 import Navbar from "@/components/Navbar.astro";
 import ScrollProgress from "@/components/ScrollProgress.astro";
 import BackToTop from "@/components/BackToTop.astro";
-import { ClientRouter, fade } from "astro:transitions";
 ---
 
 <!doctype html>
@@ -20,14 +19,11 @@ import { ClientRouter, fade } from "astro:transitions";
 			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap"
 			rel="stylesheet"
 		/>
-		<ClientRouter />
 	</head>
 	<body>
 		<ScrollProgress />
-		<div transition:persist="navbar-wrapper">
-			<Navbar />
-		</div>
-		<div class="pt-14" transition:animate={fade({ duration: "0.4s" })}>
+		<Navbar />
+		<div class="pt-14">
 			<slot />
 		</div>
 		<BackToTop />
@@ -51,7 +47,6 @@ import { ClientRouter, fade } from "astro:transitions";
 				});
 			}
 			initReveal();
-			document.addEventListener("astro:page-load", initReveal);
 		</script>
 	</body>
 </html>
