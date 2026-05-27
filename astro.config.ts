@@ -15,7 +15,6 @@ import { themeConfig } from './src/chiri-config'
 import { imageConfig } from './src/utils/chiri/image-config'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
-import react from '@astrojs/react'
 
 export default defineConfig({
     site: themeConfig.site.website,
@@ -38,8 +37,7 @@ export default defineConfig({
             Exclude: [(file) => file.toLowerCase().includes('katex')]
         }),
         mdx(),
-        sitemap(),
-        react()
+        sitemap()
     ],
     vite: {
         plugins: [tailwindcss()],

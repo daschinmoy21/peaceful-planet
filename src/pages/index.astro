@@ -1,12 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Header from "../components/Header";
-import Skills from "../components/Skills";
-import Projects from "../components/Projects";
-import Experience from "../components/Experience";
-import OpenSource from "../components/OpenSource";
-import Contact from "../components/Contact";
-import HomePosts from "../components/HomePosts";
+import Header from "../components/Header.astro";
+import Skills from "../components/Skills.astro";
+import Projects from "../components/Projects.astro";
+import Experience from "../components/Experience.astro";
+import OpenSource from "../components/OpenSource.astro";
+import Contact from "../components/Contact.astro";
+import HomePosts from "../components/HomePosts.astro";
 import { getSortedFilteredPosts } from "@/utils/chiri/draft";
 import { fetchGitHubPRs } from "@/utils/github";
 
@@ -15,12 +15,12 @@ const prs = await fetchGitHubPRs().catch(() => []);
 ---
 
 <Layout>
-	<Header client:load />
+	<Header />
 
-	<Skills client:load />
-	<OpenSource client:load prs={prs} limit={6} />
-	<Experience client:visible />
-	<Projects client:visible limit={3} />
-	<HomePosts posts={posts.slice(0, 3)} client:visible />
-	<Contact client:visible />
+	<Skills />
+	<OpenSource prs={prs} limit={6} />
+	<Experience />
+	<Projects limit={3} />
+	<HomePosts posts={posts.slice(0, 3)} />
+	<Contact />
 </Layout>

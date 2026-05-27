@@ -1,0 +1,107 @@
+<div class="max-w-4xl mx-auto pt-10 animate-fade-in-up">
+  <!-- Artwork with hover tooltip -->
+  <div class="relative mt-5 group cursor-pointer">
+    <div class="h-48 w-full bg-zinc-950 rounded-sm overflow-hidden relative border border-zinc-800" style="height: 12rem">
+      <img
+        src="/wanderer-init.png"
+        alt="Wanderer over the sea of Fog"
+        loading="eager"
+        class="h-full w-full object-cover transition-all duration-700 ease-in-out brightness-[0.6] scale-100 group-hover:brightness-100 group-hover:scale-[1.005]"
+        style="object-fit: cover; width: 100%; height: 100%"
+      />
+      <img
+        src="/wide-dither.webp"
+        alt="Wanderer over the sea of Fog (Hover)"
+        loading="eager"
+        class="absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-in-out opacity-0 scale-100 group-hover:opacity-100 group-hover:scale-[1.2]"
+        style="object-fit: cover; width: 100%; height: 100%"
+      />
+    </div>
+
+    <!-- Tooltip (shown on group hover) -->
+    <div class="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-black/90 backdrop-blur-md border border-zinc-700/50 px-6 py-4 rounded-sm shadow-2xl max-w-sm w-[90%] z-50 opacity-0 translate-y-[-10px] scale-95 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100 transition-all duration-200">
+      <div class="flex flex-col gap-1">
+        <div class="flex items-baseline justify-between border-b border-zinc-800 pb-2 mb-2">
+          <h3 class="text-xl font-bold text-white tracking-wide font-mono">Venture Into the Unknown</h3>
+          <span class="text-xs font-mono text-zinc-500">/wan·der·er/</span>
+        </div>
+        <p class="text-sm text-zinc-400 leading-relaxed font-mono">
+          Wanderer Above The Sea Of Fog by Caspar David Friedrich.
+        </p>
+      </div>
+      <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-black/90 border-l border-t border-zinc-700/50 transform rotate-45 backdrop-blur-md"></div>
+    </div>
+  </div>
+
+  <!-- Profile + info -->
+  <div class="px-8 pb-8 bg-zinc-950/90 backdrop-blur-sm border border-zinc-800 border-t-0 -mt-1 rounded-b-sm">
+    <div class="flex flex-col md:flex-row gap-6 items-start md:items-end">
+      <div class="-mt-16 relative z-10 shrink-0">
+        <div class="relative">
+          <img
+            src="/pfp2.jpg"
+            alt="Profile Picture"
+            class="w-32 h-32 rounded-full brightness-[0.8] border-4 border-zinc-950 object-cover ring-1 ring-zinc-800/50"
+          />
+          <div class="absolute inset-0 rounded-full ring-1 ring-inset ring-white/5"></div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2 pb-2 w-full">
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-4xl mt-6 font-bold text-white tracking-tight font-mono">Chinmoy</h1>
+            <!-- BadgeCheck SVG -->
+            <svg class="w-8 h-8 text-blue-500 mt-5" viewBox="0 0 24 24" fill="currentColor" stroke="black" stroke-width="1.5">
+              <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+              <path d="m9 12 2 2 4-4" stroke="currentColor" fill="none"/>
+            </svg>
+          </div>
+          <h3 class="text-xl text-zinc-400 font-mono">Software Developer</h3>
+        </div>
+
+        <div class="flex gap-4 mt-1">
+          <a href="https://github.com/daschinmoy21" target="_blank" rel="noopener noreferrer" class="text-white/70 hover:text-white hover:-translate-y-0.5 transition-all duration-200" title="GitHub">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+          <a href="https://x.com/crimxnhaze" target="_blank" rel="noopener noreferrer" class="text-blue-400/70 hover:text-blue-400 hover:-translate-y-0.5 transition-all duration-200" title="Twitter">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="mailto:daschinmoyy21@gmail.com" class="text-red-500/70 hover:text-red-500 hover:-translate-y-0.5 transition-all duration-200" title="Email">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row justify-between items-end gap-4 mt-10">
+      <div class="text-lg text-zinc-400 max-w-2xl font-mono leading-relaxed">
+        Hey there! I'm Chinmoy, a backend and systems programmer
+        specializing in development using Rust and TypeScript.
+      </div>
+
+      <div class="flex flex-col items-end gap-1 text-sm text-zinc-500 font-mono shrink-0">
+        <div class="flex items-center gap-2">
+          <span id="clock" class="min-w-[5rem] text-right font-mono tabular-nums">&nbsp;</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span>Assam, India</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const clock = document.getElementById("clock")!;
+  const tick = () => {
+    clock.textContent = new Date().toLocaleTimeString("en-US", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+  tick();
+  setInterval(tick, 1000);
+</script>
