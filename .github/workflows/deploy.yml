@@ -17,7 +17,10 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm run build
+      - name: Build with GitHub token
+        run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy via rsync over SSH
         run: |
