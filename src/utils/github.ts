@@ -15,7 +15,7 @@ export interface GitHubPR {
   };
 }
 
-const MIN_STARS = 0;
+const MIN_STARS = 100;
 
 const GRAPHQL_QUERY = `
 query {
