@@ -36,6 +36,7 @@
 
 @import "tailwindcss";
 @plugin "daisyui";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans: "Space Grotesk", sans-serif;
@@ -230,6 +231,14 @@ html.light ::selection {
   --contrib-level-2: #006d32;
   --contrib-level-3: #26a641;
   --contrib-level-4: #39d353;
+}
+
+html.light {
+  --contrib-level-0: #ebedf0;
+  --contrib-level-1: #9be9a8;
+  --contrib-level-2: #40c463;
+  --contrib-level-3: #30a14e;
+  --contrib-level-4: #216e39;
 }
 
 .ContributionCalendar-day[data-level="0"] { background-color: var(--contrib-level-0) !important; }
