@@ -1,6 +1,7 @@
 ---
 import "@/styles/global.css";
 import Navbar from "@/components/Navbar.astro";
+import Footer from "@/components/Footer.astro";
 ---
 
 <!doctype html>
@@ -11,14 +12,10 @@ import Navbar from "@/components/Navbar.astro";
 		<link rel="icon" type="image/png" href="/moon.jpg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Chinmoy Das</title>
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="preload" href="/fonts/space-grotesk-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/space-grotesk-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="alternate" type="application/rss+xml" title="Chinmoy Das's Blog RSS Feed" href="/rss.xml" />
 		<link rel="alternate" type="application/atom+xml" title="Chinmoy Das's Blog Atom Feed" href="/atom.xml" />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap"
-			rel="stylesheet"
-		/>
 		<script is:inline>
 			const getTheme = () => {
 				if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
@@ -39,6 +36,7 @@ import Navbar from "@/components/Navbar.astro";
 		<main class="max-w-2xl mx-auto px-6 py-6">
 			<slot />
 		</main>
+		<Footer />
 		<script is:inline>
 			function initReveal() {
 				const observer = new IntersectionObserver(

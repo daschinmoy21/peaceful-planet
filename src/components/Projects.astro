@@ -85,6 +85,8 @@ const visibleProjects = limit ? projects.slice(0, limit) : projects;
             <img 
               src={project.image} 
               alt={project.title} 
+              loading="lazy"
+              decoding="async"
               class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
             />
           </a>
