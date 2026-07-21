@@ -34,7 +34,7 @@ const contributionsHtml = await fetchGitHubContributionsTable().catch(() => "");
   <div class="flex items-center justify-between mb-6">
     <h2 class="text-xs font-mono font-bold tracking-widest text-zinc-500 uppercase border-b border-zinc-200 dark:border-zinc-800 pb-2">Open Source</h2>
     {hasMore && (
-      <a href="/oss" class="text-xs font-mono text-zinc-400 hover:text-white transition-colors duration-200 uppercase tracking-wider">
+      <a href="/oss" class="text-xs font-mono text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors duration-200 uppercase tracking-wider">
         View all →
       </a>
     )}
@@ -75,7 +75,7 @@ const contributionsHtml = await fetchGitHubContributionsTable().catch(() => "");
               href={pr.html_url} 
               target="_blank" 
               rel="noopener noreferrer" 
-              class="text-sm font-medium text-zinc-200 hover:text-white transition-colors font-sans tracking-tight"
+              class="text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white transition-colors font-sans tracking-tight"
             >
               {pr.title}
             </a>

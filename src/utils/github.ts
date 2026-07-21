@@ -16,9 +16,10 @@ export interface GitHubPR {
 }
 
 const MIN_STARS = 100;
+const GITHUB_USER = "daschinmoy21";
+
 /** Exclude own repos so personal project PRs don't flood the window before star filtering. */
-const PR_SEARCH_BASE =
-  "author:daschinmoy21 type:pr -user:daschinmoy21";
+const PR_SEARCH_BASE = `author:${GITHUB_USER} type:pr -user:${GITHUB_USER}`;
 /** GraphQL Search accepts sort qualifiers in the query string. */
 const PR_SEARCH_GRAPHQL = `${PR_SEARCH_BASE} sort:updated-desc`;
 
@@ -46,100 +47,140 @@ query {
   }
 }`;
 
+function getGithubToken(): string | undefined {
+  // CI injects process.env; local .env is loaded into import.meta.env by Vite.
+  const fromProcess =
+    typeof process !== "undefined" ? process.env.GITHUB_TOKEN : undefined;
+  const fromVite = import.meta.env.GITHUB_TOKEN as string | undefined;
+  const token = fromProcess || fromVite;
+  return token && token.length > 0 ? token : undefined;
+}
+
+/** Single-flight so home + /oss share one result during the static build. */
 let _cached: Promise<GitHubPR[]> | null = null;
 
 export async function fetchGitHubPRs(): Promise<GitHubPR[]> {
-  if (import.meta.env.DEV && _cached) return _cached;
-  const promise = _fetchGitHubPRs();
-  if (import.meta.env.DEV) _cached = promise;
-  return promise;
+  if (_cached) return _cached;
+  _cached = _fetchGitHubPRs().catch((err) => {
+    // Allow a later page to retry if this attempt failed hard.
+    _cached = null;
+    throw err;
+  });
+  return _cached;
 }
 
 async function _fetchGitHubPRs(): Promise<GitHubPR[]> {
-  const token = import.meta.env.GITHUB_TOKEN as string | undefined;
-
+  const token = getGithubToken();
   const headers: Record<string, string> = {
-    "Accept": "application/json",
+    Accept: "application/json",
     "User-Agent": "peaceful-planet",
   };
+  if (token) headers.Authorization = `Bearer ${token}`;
 
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-    const res = await fetch("https://api.github.com/graphql", {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ query: GRAPHQL_QUERY }),
-    });
-    if (!res.ok) throw new Error(`GraphQL failed: ${res.status}`);
-    const json = await res.json();
-    if (json.errors) throw new Error(JSON.stringify(json.errors));
-    const nodes = json.data?.search?.nodes ?? [];
-    return nodes
-      .filter((n: any) => (n.repository?.stargazerCount ?? 0) >= MIN_STARS)
-      .map((n: any) => {
-        // GraphQL uses OPEN | CLOSED | MERGED; UI only models open | closed.
-        const raw = String(n.state ?? "").toLowerCase();
-        const state: GitHubPR["state"] = raw === "open" ? "open" : "closed";
-        return {
-          id: n.id,
-          title: n.title,
-          state,
-          html_url: n.url,
-          created_at: n.createdAt,
-          closed_at: n.closedAt ?? null,
-          merged_at: n.mergedAt ?? null,
-          number: n.number,
-          repo: {
-            name: n.repository.name,
-            full_name: n.repository.nameWithOwner,
-            html_url: n.repository.url,
-            stars: n.repository.stargazerCount,
-          },
-        };
-      });
+    try {
+      return await fetchViaGraphQL(headers);
+    } catch (err) {
+      console.error("[github] GraphQL PR fetch failed, falling back to REST:", err);
+    }
   }
 
+  return fetchViaRest(headers);
+}
+
+async function fetchViaGraphQL(
+  headers: Record<string, string>,
+): Promise<GitHubPR[]> {
+  const res = await fetch("https://api.github.com/graphql", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ query: GRAPHQL_QUERY }),
+  });
+  if (!res.ok) throw new Error(`GraphQL failed: ${res.status}`);
+  const json = await res.json();
+  if (json.errors?.length) throw new Error(JSON.stringify(json.errors));
+
+  const nodes = (json.data?.search?.nodes ?? []).filter(
+    (n: any) => n && n.repository && n.title,
+  );
+
+  return nodes
+    .filter((n: any) => (n.repository?.stargazerCount ?? 0) >= MIN_STARS)
+    .map((n: any) => {
+      // GraphQL uses OPEN | CLOSED | MERGED; UI only models open | closed.
+      const raw = String(n.state ?? "").toLowerCase();
+      const state: GitHubPR["state"] = raw === "open" ? "open" : "closed";
+      return {
+        id: n.id,
+        title: n.title,
+        state,
+        html_url: n.url,
+        created_at: n.createdAt,
+        closed_at: n.closedAt ?? null,
+        merged_at: n.mergedAt ?? null,
+        number: n.number,
+        repo: {
+          name: n.repository.name,
+          full_name: n.repository.nameWithOwner,
+          html_url: n.repository.url,
+          stars: n.repository.stargazerCount,
+        },
+      };
+    });
+}
+
+async function fetchViaRest(
+  headers: Record<string, string>,
+): Promise<GitHubPR[]> {
   const params = new URLSearchParams({
     q: PR_SEARCH_BASE,
     sort: "updated",
     order: "desc",
     per_page: "50",
   });
-  headers["Accept"] = "application/vnd.github+json";
+  const restHeaders = {
+    ...headers,
+    Accept: "application/vnd.github+json",
+  };
 
   const res = await fetch(
     `https://api.github.com/search/issues?${params}`,
-    { headers },
+    { headers: restHeaders },
   );
   if (!res.ok) throw new Error(`REST failed: ${res.status}`);
 
   const data = await res.json();
-  const repoStars = new Map<string, number>();
   const items: GitHubPR[] = [];
+  const repoStars = new Map<string, number>();
 
-  for (const item of data.items) {
+  for (const item of data.items ?? []) {
+    if (!item?.repository_url) continue;
+
     const repoFull = item.repository_url.replace(
       "https://api.github.com/repos/",
       "",
     );
+
     if (!repoStars.has(repoFull)) {
       try {
-        const rr = await fetch(`https://api.github.com/repos/${repoFull}`, { headers });
-        repoStars.set(repoFull, rr.ok ? ((await rr.json()).stargazers_count ?? 0) : 0);
+        const rr = await fetch(`https://api.github.com/repos/${repoFull}`, {
+          headers: restHeaders,
+        });
+        repoStars.set(
+          repoFull,
+          rr.ok ? ((await rr.json()).stargazers_count ?? 0) : 0,
+        );
       } catch {
         repoStars.set(repoFull, 0);
       }
     }
+
     const stars = repoStars.get(repoFull) ?? 0;
     if (stars < MIN_STARS) continue;
 
-    let mergedAt: string | null = null;
-    if (item.state === "closed" && item.pull_request) {
-      try {
-        const prRes = await fetch(item.pull_request.url, { headers });
-        if (prRes.ok) mergedAt = (await prRes.json()).merged_at || null;
-      } catch { /* skip */ }
-    }
+    // Search results already include pull_request.merged_at — no N+1 fetch.
+    const mergedAt: string | null =
+      item.pull_request?.merged_at ?? null;
 
     items.push({
       id: String(item.id),
@@ -167,10 +208,14 @@ export async function fetchGitHubContributionsTable(): Promise<string> {
   if (_contribCached) return _contribCached;
   const promise = (async () => {
     try {
-      const res = await fetch("https://github.com/users/daschinmoy21/contributions");
+      const res = await fetch(
+        `https://github.com/users/${GITHUB_USER}/contributions`,
+      );
       if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
       const html = await res.text();
-      const tableMatch = html.match(/<table[^>]*ContributionCalendar-grid[^>]*>([\s\S]*?)<\/table>/);
+      const tableMatch = html.match(
+        /<table[^>]*ContributionCalendar-grid[^>]*>([\s\S]*?)<\/table>/,
+      );
       if (!tableMatch) return "";
       return tableMatch[0]
         .replace(/\s*data-hydro-click="[^"]*"/g, "")

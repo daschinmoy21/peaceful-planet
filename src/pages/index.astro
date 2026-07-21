@@ -11,7 +11,10 @@ import { getSortedFilteredPosts } from "@/utils/chiri/draft";
 import { fetchGitHubPRs } from "@/utils/github";
 
 const posts = await getSortedFilteredPosts();
-const prs = await fetchGitHubPRs().catch(() => []);
+const prs = await fetchGitHubPRs().catch((err) => {
+	console.error("[oss] failed to fetch PRs for home:", err);
+	return [];
+});
 ---
 
 <Layout>
