@@ -16,10 +16,15 @@ export interface GitHubPR {
 }
 
 const MIN_STARS = 100;
+/** Exclude own repos so personal project PRs don't flood the window before star filtering. */
+const PR_SEARCH_BASE =
+  "author:daschinmoy21 type:pr -user:daschinmoy21";
+/** GraphQL Search accepts sort qualifiers in the query string. */
+const PR_SEARCH_GRAPHQL = `${PR_SEARCH_BASE} sort:updated-desc`;
 
 const GRAPHQL_QUERY = `
 query {
-  search(query: "author:daschinmoy21 type:pr sort:updated-desc", type: ISSUE, first: 30) {
+  search(query: "${PR_SEARCH_GRAPHQL}", type: ISSUE, first: 50) {
     nodes {
       ... on PullRequest {
         id
@@ -71,29 +76,34 @@ async function _fetchGitHubPRs(): Promise<GitHubPR[]> {
     const nodes = json.data?.search?.nodes ?? [];
     return nodes
       .filter((n: any) => (n.repository?.stargazerCount ?? 0) >= MIN_STARS)
-      .map((n: any) => ({
-        id: n.id,
-        title: n.title,
-        state: n.state.toLowerCase() as GitHubPR["state"],
-        html_url: n.url,
-        created_at: n.createdAt,
-        closed_at: n.closedAt ?? null,
-        merged_at: n.mergedAt ?? null,
-        number: n.number,
-        repo: {
-          name: n.repository.name,
-          full_name: n.repository.nameWithOwner,
-          html_url: n.repository.url,
-          stars: n.repository.stargazerCount,
-        },
-      }));
+      .map((n: any) => {
+        // GraphQL uses OPEN | CLOSED | MERGED; UI only models open | closed.
+        const raw = String(n.state ?? "").toLowerCase();
+        const state: GitHubPR["state"] = raw === "open" ? "open" : "closed";
+        return {
+          id: n.id,
+          title: n.title,
+          state,
+          html_url: n.url,
+          created_at: n.createdAt,
+          closed_at: n.closedAt ?? null,
+          merged_at: n.mergedAt ?? null,
+          number: n.number,
+          repo: {
+            name: n.repository.name,
+            full_name: n.repository.nameWithOwner,
+            html_url: n.repository.url,
+            stars: n.repository.stargazerCount,
+          },
+        };
+      });
   }
 
   const params = new URLSearchParams({
-    q: "author:daschinmoy21 type:pr",
+    q: PR_SEARCH_BASE,
     sort: "updated",
     order: "desc",
-    per_page: "10",
+    per_page: "50",
   });
   headers["Accept"] = "application/vnd.github+json";
 
