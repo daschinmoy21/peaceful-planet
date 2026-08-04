@@ -5,6 +5,9 @@ on:
     branches: [master]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -17,17 +20,41 @@ jobs:
           cache: npm
 
       - run: npm ci
+
       - name: Build with GitHub token
         run: npm run build
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Built-in token is enough for public GraphQL search + stargazerCount.
+          # Optional repo secret GH_PAT overrides for higher rate limits.
+          GITHUB_TOKEN: ${{ secrets.GH_PAT != '' && secrets.GH_PAT || github.token }}
 
       - name: Deploy via rsync over SSH
+        env:
+          # VPS_SSH_KEY is a base64-encoded OpenSSH private key
+          # (encode with: base64 -w0 < ~/.ssh/id_ed25519)
+          SSH_PRIVATE_KEY_B64: ${{ secrets.VPS_SSH_KEY }}
         run: |
+          set -euo pipefail
           mkdir -p ~/.ssh
-          cat << 'SSH_KEY_EOF' > ~/.ssh/id_ed25519
-          ${{ secrets.VPS_SSH_KEY }}
-          SSH_KEY_EOF
+          chmod 700 ~/.ssh
+
+          if [ -z "${SSH_PRIVATE_KEY_B64:-}" ]; then
+            echo "::error::VPS_SSH_KEY secret is empty"
+            exit 1
+          fi
+
+          # Decode base64 key (format used by successful deploys before the raw-key regression)
+          echo "$SSH_PRIVATE_KEY_B64" | base64 -d > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -t ed25519 178.105.135.161 >> ~/.ssh/known_hosts 2>/dev/null
-          rsync -avz --delete dist/ crimxnhaze@178.105.135.161:/home/crimxnhaze/peaceful-planet
+
+          # Fail fast if the secret is not a valid key
+          if ! ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null 2>&1; then
+            echo "::error::VPS_SSH_KEY is not a valid base64-encoded OpenSSH private key"
+            echo "Encode with: base64 -w0 < path/to/private_key"
+            exit 1
+          fi
+
+          ssh-keyscan -t ed25519,rsa 178.105.135.161 >> ~/.ssh/known_hosts 2>/dev/null
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes" \
+            dist/ crimxnhaze@178.105.135.161:/home/crimxnhaze/peaceful-planet

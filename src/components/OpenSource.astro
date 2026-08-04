@@ -92,7 +92,7 @@ const contributionsHtml = await fetchGitHubContributionsTable().catch(() => "");
             >
               {pr.repo.full_name}
             </a>
-            <span class="flex items-center gap-0.5"><span class="text-amber-400 font-sans">★</span>{pr.repo.stars}</span>
+            <span class="flex items-center gap-0.5 tabular-nums"><span class="text-amber-400 font-sans">★</span>{pr.repo.stars.toLocaleString("en-US")}</span>
             <span>#{pr.number}</span>
             <span>{date}</span>
           </div>

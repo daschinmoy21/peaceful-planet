@@ -47,13 +47,18 @@ query {
   }
 }`;
 
-function getGithubToken(): string | undefined {
-  // CI injects process.env; local .env is loaded into import.meta.env by Vite.
+function readEnv(name: string): string | undefined {
+  // CI / Node inject process.env; Vite/Astro also expose .env via import.meta.env.
   const fromProcess =
-    typeof process !== "undefined" ? process.env.GITHUB_TOKEN : undefined;
-  const fromVite = import.meta.env.GITHUB_TOKEN as string | undefined;
-  const token = fromProcess || fromVite;
-  return token && token.length > 0 ? token : undefined;
+    typeof process !== "undefined" ? process.env[name] : undefined;
+  const fromVite = (import.meta.env as Record<string, string | undefined>)[name];
+  const value = fromProcess || fromVite;
+  return value && value.length > 0 ? value : undefined;
+}
+
+function getGithubToken(): string | undefined {
+  // Prefer a PAT if set (higher rate limits); fall back to Actions GITHUB_TOKEN.
+  return readEnv("GH_PAT") || readEnv("GH_TOKEN") || readEnv("GITHUB_TOKEN");
 }
 
 /** Single-flight so home + /oss share one result during the static build. */
@@ -69,23 +74,73 @@ export async function fetchGitHubPRs(): Promise<GitHubPR[]> {
   return _cached;
 }
 
+function logPrSummary(source: string, prs: GitHubPR[]): GitHubPR[] {
+  const sample = prs
+    .slice(0, 3)
+    .map((p) => `${p.repo.full_name}★${p.repo.stars}`)
+    .join(", ");
+  console.log(
+    `[github] ${source}: ${prs.length} PRs with ≥${MIN_STARS} stars` +
+      (sample ? ` (e.g. ${sample})` : ""),
+  );
+  return prs;
+}
+
 async function _fetchGitHubPRs(): Promise<GitHubPR[]> {
   const token = getGithubToken();
   const headers: Record<string, string> = {
     Accept: "application/json",
     "User-Agent": "peaceful-planet",
   };
-  if (token) headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+    console.log("[github] using authenticated GitHub API");
+  } else {
+    console.warn(
+      "[github] no GITHUB_TOKEN/GH_TOKEN — unauthenticated rate limits may drop star counts",
+    );
+  }
 
+  // Prefer GraphQL: one request returns PRs + stargazerCount (no N+1).
   if (token) {
     try {
-      return await fetchViaGraphQL(headers);
+      return logPrSummary("GraphQL", await fetchViaGraphQL(headers));
     } catch (err) {
-      console.error("[github] GraphQL PR fetch failed, falling back to REST:", err);
+      console.error(
+        "[github] GraphQL PR fetch failed, falling back to REST:",
+        err,
+      );
     }
   }
 
-  return fetchViaRest(headers);
+  return logPrSummary("REST", await fetchViaRest(headers));
+}
+
+function mapGraphQLNode(n: any): GitHubPR | null {
+  if (!n?.repository || !n.title) return null;
+  const stars = Number(n.repository.stargazerCount ?? 0);
+  if (!Number.isFinite(stars) || stars < MIN_STARS) return null;
+
+  // GraphQL uses OPEN | CLOSED | MERGED; UI only models open | closed.
+  const raw = String(n.state ?? "").toLowerCase();
+  const state: GitHubPR["state"] = raw === "open" ? "open" : "closed";
+
+  return {
+    id: String(n.id),
+    title: n.title,
+    state,
+    html_url: n.url,
+    created_at: n.createdAt,
+    closed_at: n.closedAt ?? null,
+    merged_at: n.mergedAt ?? null,
+    number: n.number,
+    repo: {
+      name: n.repository.name,
+      full_name: n.repository.nameWithOwner,
+      html_url: n.repository.url,
+      stars,
+    },
+  };
 }
 
 async function fetchViaGraphQL(
@@ -93,40 +148,56 @@ async function fetchViaGraphQL(
 ): Promise<GitHubPR[]> {
   const res = await fetch("https://api.github.com/graphql", {
     method: "POST",
-    headers,
+    headers: {
+      ...headers,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ query: GRAPHQL_QUERY }),
   });
-  if (!res.ok) throw new Error(`GraphQL failed: ${res.status}`);
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`GraphQL failed: ${res.status} ${body.slice(0, 200)}`);
+  }
   const json = await res.json();
   if (json.errors?.length) throw new Error(JSON.stringify(json.errors));
 
-  const nodes = (json.data?.search?.nodes ?? []).filter(
-    (n: any) => n && n.repository && n.title,
+  const nodes: any[] = json.data?.search?.nodes ?? [];
+  return nodes
+    .map(mapGraphQLNode)
+    .filter((p: GitHubPR | null): p is GitHubPR => p !== null);
+}
+
+/** Fetch stargazer counts for unique repos (parallel, cached). */
+async function fetchRepoStars(
+  repos: string[],
+  headers: Record<string, string>,
+): Promise<Map<string, number>> {
+  const unique = [...new Set(repos)];
+  const stars = new Map<string, number>();
+
+  await Promise.all(
+    unique.map(async (repoFull) => {
+      try {
+        const rr = await fetch(`https://api.github.com/repos/${repoFull}`, {
+          headers,
+        });
+        if (!rr.ok) {
+          console.warn(
+            `[github] repo stars failed for ${repoFull}: HTTP ${rr.status}`,
+          );
+          // Do not store 0 — unknown is different from a true zero-star repo.
+          return;
+        }
+        const body = await rr.json();
+        const count = Number(body.stargazers_count);
+        if (Number.isFinite(count)) stars.set(repoFull, count);
+      } catch (err) {
+        console.warn(`[github] repo stars error for ${repoFull}:`, err);
+      }
+    }),
   );
 
-  return nodes
-    .filter((n: any) => (n.repository?.stargazerCount ?? 0) >= MIN_STARS)
-    .map((n: any) => {
-      // GraphQL uses OPEN | CLOSED | MERGED; UI only models open | closed.
-      const raw = String(n.state ?? "").toLowerCase();
-      const state: GitHubPR["state"] = raw === "open" ? "open" : "closed";
-      return {
-        id: n.id,
-        title: n.title,
-        state,
-        html_url: n.url,
-        created_at: n.createdAt,
-        closed_at: n.closedAt ?? null,
-        merged_at: n.mergedAt ?? null,
-        number: n.number,
-        repo: {
-          name: n.repository.name,
-          full_name: n.repository.nameWithOwner,
-          html_url: n.repository.url,
-          stars: n.repository.stargazerCount,
-        },
-      };
-    });
+  return stars;
 }
 
 async function fetchViaRest(
@@ -147,13 +218,33 @@ async function fetchViaRest(
     `https://api.github.com/search/issues?${params}`,
     { headers: restHeaders },
   );
-  if (!res.ok) throw new Error(`REST failed: ${res.status}`);
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`REST search failed: ${res.status} ${body.slice(0, 200)}`);
+  }
 
   const data = await res.json();
-  const items: GitHubPR[] = [];
-  const repoStars = new Map<string, number>();
+  const rawItems: any[] = data.items ?? [];
 
-  for (const item of data.items ?? []) {
+  const repoNames = rawItems
+    .map((item) =>
+      item?.repository_url
+        ? item.repository_url.replace("https://api.github.com/repos/", "")
+        : null,
+    )
+    .filter((r: string | null): r is string => !!r);
+
+  const repoStars = await fetchRepoStars(repoNames, restHeaders);
+
+  if (repoStars.size === 0 && rawItems.length > 0) {
+    console.error(
+      "[github] could not load any repo star counts — refusing to render ★0 placeholders",
+    );
+    return [];
+  }
+
+  const items: GitHubPR[] = [];
+  for (const item of rawItems) {
     if (!item?.repository_url) continue;
 
     const repoFull = item.repository_url.replace(
@@ -161,26 +252,13 @@ async function fetchViaRest(
       "",
     );
 
-    if (!repoStars.has(repoFull)) {
-      try {
-        const rr = await fetch(`https://api.github.com/repos/${repoFull}`, {
-          headers: restHeaders,
-        });
-        repoStars.set(
-          repoFull,
-          rr.ok ? ((await rr.json()).stargazers_count ?? 0) : 0,
-        );
-      } catch {
-        repoStars.set(repoFull, 0);
-      }
-    }
-
-    const stars = repoStars.get(repoFull) ?? 0;
+    // Skip when star count is unknown (rate limit) or below threshold.
+    if (!repoStars.has(repoFull)) continue;
+    const stars = repoStars.get(repoFull)!;
     if (stars < MIN_STARS) continue;
 
     // Search results already include pull_request.merged_at — no N+1 fetch.
-    const mergedAt: string | null =
-      item.pull_request?.merged_at ?? null;
+    const mergedAt: string | null = item.pull_request?.merged_at ?? null;
 
     items.push({
       id: String(item.id),
