@@ -31,7 +31,7 @@ jobs:
       - name: Deploy via rsync over SSH
         env:
           # VPS_SSH_KEY is a base64-encoded OpenSSH private key
-          # (encode with: base64 -w0 < ~/.ssh/id_ed25519)
+          # (encode with: base64 -w0 < path/to/private_key)
           SSH_PRIVATE_KEY_B64: ${{ secrets.VPS_SSH_KEY }}
         run: |
           set -euo pipefail
@@ -54,7 +54,13 @@ jobs:
             exit 1
           fi
 
-          ssh-keyscan -t ed25519,rsa 178.105.135.161 >> ~/.ssh/known_hosts 2>/dev/null
+          # netcup VPS (Debian 13) — static site served by nginx container
+          # Path is bind-mounted to peaceful-planet:/usr/share/nginx/html
+          VPS_HOST="152.53.66.150"
+          VPS_USER="root"
+          VPS_PATH="/opt/stack/peaceful-planet/html"
+
+          ssh-keyscan -t ed25519,rsa "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes" \
-            dist/ crimxnhaze@178.105.135.161:/home/crimxnhaze/peaceful-planet
+            dist/ "${VPS_USER}@${VPS_HOST}:${VPS_PATH}/"
