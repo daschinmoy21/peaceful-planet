@@ -175,7 +175,7 @@
   border-radius: 5px;
   background-color: var(--code-bg);
   border: 0.5px solid var(--border);
-  font-family: var(--mono);
+  font-family: var(--font-code, var(--mono));
   font-size: 0.9em;
   font-feature-settings:
     'liga' 0,
@@ -378,7 +378,7 @@
 
 /* Keyboard input */
 .prose kbd {
-  font-family: var(--mono);
+  font-family: var(--font-code, var(--mono));
   font-size: var(--font-size-s);
   border: 1px solid var(--text-tertiary);
   padding: 1px 4px;
@@ -469,7 +469,7 @@
 }
 
 .prose pre > code {
-  font-family: var(--mono);
+  font-family: var(--font-code, var(--mono));
   font-feature-settings:
     'liga' 0,
     'calt' 0;

@@ -39,8 +39,11 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: "Space Grotesk", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  /* Single UI typeface — hierarchy comes from size/weight/tracking, not mixed families */
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "Space Grotesk", system-ui, sans-serif;
+  /* True monospace reserved for code (see pre/code rules below) */
+  --font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 :root {
@@ -54,6 +57,18 @@
   --code-bg: #09090b;
   --code-border: #18181b;
   --nav-bg-rgb: 5, 5, 5;
+
+  /* Shared type tokens (portfolio + chiri/blog) */
+  --sans: "Space Grotesk", system-ui, sans-serif;
+  --serif: Besley, Baskerville, Georgia, Cambria, "Times New Roman", Times, serif;
+  --mono: "Space Grotesk", system-ui, sans-serif;
+  --font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-size-s: 0.95rem;
+  --font-size-m: 1.1rem;
+  --font-size-l: 1.25rem;
+  --font-weight-light: 400;
+  --font-weight-regular: 400;
+  --font-weight-bold: 600;
 
   /* Legacy Chiri variables compatibility */
   --text-primary: rgba(255, 255, 255, 0.9);
@@ -87,18 +102,73 @@
   --shiki-token-link: #56b6c2;
 }
 
+html {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-feature-settings: "ss03" 1;
+  text-rendering: optimizeLegibility;
+}
+
 body {
   background-color: var(--bg-color) !important;
   color: var(--text-color) !important;
   font-size: 1.025rem;
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   @apply antialiased min-h-screen relative font-sans transition-colors duration-200;
+}
+
+/* Space Grotesk tops out at 700 — avoid synthetic 800/900 bold */
+.font-extrabold,
+.font-black {
+  font-weight: 700 !important;
+}
+
+/* True monospace for code only */
+code,
+pre,
+.astro-code,
+pre code,
+.prose code,
+.prose pre {
+  font-family: var(--font-code) !important;
+  font-feature-settings: normal;
+  letter-spacing: 0;
 }
 
 /* Force headings to heading color */
 h1, h2, h3, h4, h5, h6, .text-white, .text-zinc-100, .text-zinc-200 {
   color: var(--text-heading) !important;
   @apply transition-colors duration-200;
+}
+
+/* Shared section titles (Projects, Skills, etc.) — shaded bar + accent */
+.section-heading {
+  font-family: var(--sans);
+  font-size: 1.125rem; /* ~text-lg */
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--text-heading) !important;
+  margin: 0;
+}
+
+.section-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0.65rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+html.light .section-heading-row {
+  background: transparent;
+  box-shadow: none;
 }
 
 /* Force paragraphs and text-zinc-400 to text-color */
@@ -248,7 +318,7 @@ html.light {
 .ContributionCalendar-day[data-level="4"] { background-color: var(--contrib-level-4) !important; }
 
 .ContributionCalendar-label {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-family: var(--mono) !important;
   font-size: 9px !important;
   color: var(--text-mono) !important;
 }

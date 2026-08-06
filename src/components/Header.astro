@@ -1,32 +1,48 @@
-<div class="max-w-2xl mx-auto pt-8 pb-4 animate-fade-in-up">
+<div class="max-w-2xl mx-auto pt-0 pb-4 animate-fade-in-up">
   <div class="flex flex-col gap-3">
-    <!-- Profile/Handle -->
-    <div class="flex items-center gap-3.5">
-      <h1 class="text-4xl font-extrabold text-white tracking-tight font-sans lowercase">chinmoy</h1>
-      <img 
-        src="/buttons/self.png" 
-        width="88" 
-        height="31" 
-        alt="Self button" 
-        class="rounded-sm border border-zinc-200 dark:border-zinc-900 shadow-sm"
+    <!-- Banner with overlaid name -->
+    <div class="relative w-full h-44 sm:h-52 rounded-sm border border-zinc-800 shadow-sm overflow-hidden">
+      <img
+        src="/miku.gif"
+        alt="Banner"
+        class="absolute inset-0 w-full h-full object-cover object-[32%_center]"
       />
-    </div>
-      
-      <div class="flex flex-col gap-1.5 font-mono text-sm text-zinc-400">
-        <div class="flex items-center gap-2">
-          <span class="text-zinc-600">→</span>
-          <span>systems & backend developer</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-zinc-600">→</span>
-          <span>specializing in Rust & Go</span>
-        </div>
-        <div class="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
-          <span class="text-zinc-600">→</span>
-          <span>located in Assam, India</span>
-          <span class="text-zinc-700">|</span>
-          <span id="header-clock" class="text-zinc-500 tabular-nums"></span>
+      <!-- Soft gradient so text stays readable -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+      <div class="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 flex items-center gap-3.5">
+        <h1 class="text-4xl font-bold text-white tracking-tight font-sans lowercase drop-shadow-md">chinmoy</h1>
+        <img
+          src="/buttons/self.png"
+          width="88"
+          height="31"
+          alt="Self button"
+          class="rounded-sm border border-zinc-200 dark:border-zinc-900 shadow-sm"
+        />
       </div>
+    </div>
+
+    <div class="flex flex-col gap-1.5 font-mono text-sm text-zinc-400">
+      <div class="flex items-center gap-2">
+        <span class="text-zinc-600">→</span>
+        <span>systems & backend developer</span>
+        <span class="text-zinc-700">|</span>
+        <span class="text-zinc-500">he/him</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-zinc-600">→</span>
+        <span>specializing in Rust & Go</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-zinc-600">→</span>
+        <span>located in Assam, India</span>
+        <span class="text-zinc-700">|</span>
+        <span id="header-clock" class="text-zinc-500 tabular-nums"></span>
+      </div>
+      <div class="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
+        <span class="text-zinc-600">→</span>
+        <span>4th Year CS UG</span>
+      </div>
+    </div>
 
     <!-- Short Bio -->
     <p class="text-base text-zinc-300 leading-relaxed font-sans">
