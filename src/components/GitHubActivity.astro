@@ -70,19 +70,23 @@ const contributionLabel = (contribution: GitHubContribution) =>
           <div class="github-activity-weeks">
             {activity.weeks.map((week) => (
               <div class="github-activity-week">
-                {week.map((contribution) => (
-                  <button
-                    type="button"
-                    class="github-activity-cell"
-                    style={`--cell-color: var(--contrib-level-${contribution.level})`}
-                    data-github-cell
-                    data-date={formatDate(contribution.date)}
-                    data-count={contribution.count}
-                    aria-label={contributionLabel(contribution)}
-                  >
-                    <span aria-hidden="true"></span>
-                  </button>
-                ))}
+                {week.map((contribution) =>
+                  contribution ? (
+                    <button
+                      type="button"
+                      class="github-activity-cell"
+                      style={`--cell-color: var(--contrib-level-${contribution.level})`}
+                      data-github-cell
+                      data-date={formatDate(contribution.date)}
+                      data-count={contribution.count}
+                      aria-label={contributionLabel(contribution)}
+                    >
+                      <span aria-hidden="true"></span>
+                    </button>
+                  ) : (
+                    <span class="github-activity-cell github-activity-cell-empty" aria-hidden="true"></span>
+                  )
+                )}
               </div>
             ))}
           </div>
@@ -305,7 +309,14 @@ const contributionLabel = (contribution: GitHubContribution) =>
     });
   };
 
+  const cleanupGitHubActivity = () => {
+    document.querySelectorAll<HTMLElement>("[data-github-tooltip]").forEach((tooltip) => {
+      if (tooltip.parentElement === document.body) tooltip.remove();
+    });
+  };
+
   initializeGitHubActivity();
+  document.addEventListener("astro:before-swap", cleanupGitHubActivity);
   document.addEventListener("astro:after-swap", initializeGitHubActivity);
 </script>
 
@@ -370,6 +381,11 @@ const contributionLabel = (contribution: GitHubContribution) =>
     border-radius: 3px;
     background: transparent;
     cursor: help;
+  }
+
+  .github-activity-cell-empty {
+    background: transparent;
+    cursor: default;
   }
 
   .github-activity-cell span,

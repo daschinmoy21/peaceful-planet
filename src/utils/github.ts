@@ -31,9 +31,11 @@ export interface GitHubRepositoryActivity {
   logo?: string;
 }
 
+export type GitHubCalendarCell = GitHubContribution | null;
+
 export interface GitHubActivityData {
   contributions: GitHubContribution[];
-  weeks: GitHubContribution[][];
+  weeks: GitHubCalendarCell[][];
   monthLabels: { label: string; column: number }[];
   total: number;
   year: number | null;
@@ -46,7 +48,6 @@ const MIN_STARS = 100;
 const PR_SEARCH_BASE = `author:${GITHUB_USER} type:pr -user:${GITHUB_USER}`;
 const PR_SEARCH_GRAPHQL = `${PR_SEARCH_BASE} sort:updated-desc`;
 const CONTRIBUTION_CALENDAR_API = `https://github-contributions-api.jogruber.de/v4/${GITHUB_USER}?y=last`;
-const WEEKS_PER_YEAR = 53;
 const MONTH_NAMES = [
   "Jan",
   "Feb",
@@ -89,7 +90,7 @@ query {
 function readEnv(name: string): string | undefined {
   const fromProcess =
     typeof process !== "undefined" ? process.env[name] : undefined;
-  const fromVite = (import.meta.env as Record<string, string | undefined>)[name];
+  const fromVite = (import.meta.env as Record<string, string | undefined> | undefined)?.[name];
   const value = fromProcess || fromVite;
   return value && value.length > 0 ? value : undefined;
 }
@@ -125,25 +126,80 @@ function normalizeLevel(level: unknown): ContributionLevel {
   return Math.min(4, Math.max(0, Math.round(value))) as ContributionLevel;
 }
 
-function toWeeks(contributions: GitHubContribution[]): GitHubContribution[][] {
-  const firstSunday = contributions.findIndex(
-    (contribution) =>
-      new Date(`${contribution.date}T00:00:00Z`).getUTCDay() === 0,
-  );
-  const sundayAligned = contributions.slice(firstSunday < 0 ? 0 : firstSunday);
-  return Array.from(
-    { length: Math.ceil(sundayAligned.length / 7) },
-    (_, index) => sundayAligned.slice(index * 7, index * 7 + 7),
-  ).slice(-WEEKS_PER_YEAR);
+export function normalizeContributions(body: unknown): GitHubContribution[] {
+  const rawContributions =
+    body && typeof body === "object" && "contributions" in body
+      ? (body as { contributions?: unknown }).contributions
+      : undefined;
+
+  if (!Array.isArray(rawContributions)) return [];
+
+  return rawContributions
+    .map((raw) => {
+      const contribution =
+        raw && typeof raw === "object"
+          ? (raw as { date?: unknown; count?: unknown; level?: unknown })
+          : {};
+      const date = String(contribution.date ?? "");
+      const count = Number(contribution.count);
+
+      return {
+        date,
+        count: Number.isFinite(count) ? Math.max(0, count) : 0,
+        level: normalizeLevel(contribution.level),
+      };
+    })
+    .filter((contribution) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(contribution.date)) return false;
+      const date = new Date(`${contribution.date}T00:00:00Z`);
+      return (
+        !Number.isNaN(date.getTime()) &&
+        date.toISOString().slice(0, 10) === contribution.date
+      );
+    })
+    .sort((first, second) => first.date.localeCompare(second.date));
 }
 
-function getMonthLabels(weeks: GitHubContribution[][]) {
+export function toWeeks(
+  contributions: GitHubContribution[],
+): GitHubCalendarCell[][] {
+  if (contributions.length === 0) return [];
+
+  const firstDay = new Date(`${contributions[0].date}T00:00:00Z`).getUTCDay();
+  const cells: GitHubCalendarCell[] = [
+    ...Array<null>(firstDay).fill(null),
+    ...contributions,
+  ];
+  const trailingEmptyCells = (7 - (cells.length % 7)) % 7;
+  cells.push(...Array<null>(trailingEmptyCells).fill(null));
+
+  return Array.from(
+    { length: cells.length / 7 },
+    (_, index) => cells.slice(index * 7, index * 7 + 7),
+  );
+}
+
+export function getMonthLabels(weeks: GitHubCalendarCell[][]) {
   const labels: { label: string; column: number }[] = [];
   const seen = new Set<string>();
+  const firstWeek = weeks[0] ?? [];
+  const firstWeekMonthStart = firstWeek.find(
+    (contribution) => contribution?.date.slice(8, 10) === "01",
+  );
+  const firstContribution = firstWeek.find(Boolean);
+
+  if (!firstWeekMonthStart && firstContribution) {
+    const month = firstContribution.date.slice(0, 7);
+    seen.add(month);
+    labels.push({
+      label: MONTH_NAMES[Number(month.slice(5, 7)) - 1] ?? "",
+      column: 0,
+    });
+  }
 
   weeks.forEach((week, column) => {
     const monthStart = week.find(
-      (contribution) => contribution.date.slice(8, 10) === "01",
+      (contribution) => contribution?.date.slice(8, 10) === "01",
     );
     if (!monthStart) return;
 
@@ -166,40 +222,19 @@ async function fetchContributions(): Promise<GitHubActivityData> {
       throw new Error(`Contribution API failed: ${response.status}`);
     }
 
-    const body = await response.json();
-    const contributions = (
-      Array.isArray(body?.contributions) ? body.contributions : []
-    )
-      .map(
-        (contribution: {
-          date?: unknown;
-          count?: unknown;
-          level?: unknown;
-        }) => ({
-          date: String(contribution.date ?? ""),
-          count: Math.max(0, Number(contribution.count) || 0),
-          level: normalizeLevel(contribution.level),
-        }),
-      )
-      .filter((contribution: GitHubContribution) =>
-        /^\d{4}-\d{2}-\d{2}$/.test(contribution.date),
-      )
-      .sort((a: GitHubContribution, b: GitHubContribution) =>
-        a.date.localeCompare(b.date),
-      );
+    const contributions = normalizeContributions(await response.json());
     const weeks = toWeeks(contributions);
-    const visibleContributions = weeks.flat();
 
     return {
-      contributions: visibleContributions,
+      contributions,
       weeks,
       monthLabels: getMonthLabels(weeks),
-      total: visibleContributions.reduce(
+      total: contributions.reduce(
         (sum, contribution) => sum + contribution.count,
         0,
       ),
-      year: visibleContributions.length
-        ? Number(visibleContributions.at(-1)?.date.slice(0, 4))
+      year: contributions.length
+        ? Number(contributions.at(-1)?.date.slice(0, 4))
         : null,
       prs: [],
       repositories: [],
@@ -361,7 +396,7 @@ async function fetchGitHubPRs(): Promise<GitHubPR[]> {
   return prsCached;
 }
 
-function getRepositories(prs: GitHubPR[]): GitHubRepositoryActivity[] {
+export function getRepositories(prs: GitHubPR[]): GitHubRepositoryActivity[] {
   const repositories = new Map<string, GitHubRepositoryActivity>();
 
   for (const pr of prs) {
