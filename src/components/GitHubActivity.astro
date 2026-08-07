@@ -1,0 +1,553 @@
+---
+import type { GitHubActivityData, GitHubContribution } from "@/utils/github";
+
+interface Props {
+  activity: GitHubActivityData;
+  repositoryLimit?: number;
+  prLimit?: number;
+  showViewAll?: boolean;
+}
+
+const { activity, repositoryLimit, prLimit, showViewAll = false } = Astro.props as Props;
+const filteredRepositories = activity.repositories.filter((repository) => repository.stars >= 100);
+const repositories = repositoryLimit
+  ? filteredRepositories.slice(0, repositoryLimit)
+  : filteredRepositories;
+const visiblePRs = prLimit ? activity.prs.slice(0, prLimit) : activity.prs;
+const hasMoreRepositories = Boolean(
+  repositoryLimit && filteredRepositories.length > repositoryLimit,
+);
+const hasMorePRs = Boolean(prLimit && activity.prs.length > prLimit);
+const hasMoreActivity = hasMoreRepositories || hasMorePRs;
+const panelId = "github-activity-repositories";
+const monthLabels = new Map(
+  activity.monthLabels.map(({ column, label }) => [column, label]),
+);
+const hasContributions = activity.weeks.length > 0;
+const formatDate = (date: string) =>
+  new Date(`${date}T00:00:00Z`).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+const contributionLabel = (contribution: GitHubContribution) =>
+  `${contribution.count} ${contribution.count === 1 ? "contribution" : "contributions"} on ${formatDate(contribution.date)}`;
+---
+
+<div class="max-w-2xl mx-auto py-6 animate-fade-in-up">
+  <div class="section-heading-row">
+    <h2 class="section-heading">GitHub Activity</h2>
+    {showViewAll && hasMoreActivity && (
+      <a
+        href="/oss"
+        class="text-xs font-mono text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors duration-200 uppercase tracking-wider shrink-0"
+      >
+        View all →
+      </a>
+    )}
+  </div>
+
+  <div
+    data-github-activity
+    class={`github-activity-card relative border border-zinc-900 bg-zinc-950/60 p-4 ${repositories.length > 0 ? "pb-20" : ""}`}
+  >
+    <p class="mb-4 px-1 text-base font-medium tracking-tight text-zinc-200">
+      {activity.total.toLocaleString("en-US")} contributions{activity.year ? ` in ${activity.year}` : ""}
+    </p>
+
+    {hasContributions ? (
+      <div class="github-activity-grid-frame" aria-label="Contribution activity">
+        <div class="github-activity-grid">
+          <div class="github-activity-months" aria-hidden="true">
+            {activity.weeks.map((_, column) => (
+              <span class="github-activity-month">
+                {monthLabels.get(column) ?? ""}
+              </span>
+            ))}
+          </div>
+
+          <div class="github-activity-weeks">
+            {activity.weeks.map((week) => (
+              <div class="github-activity-week">
+                {week.map((contribution) =>
+                  contribution ? (
+                    <button
+                      type="button"
+                      class="github-activity-cell"
+                      style={`--cell-color: var(--contrib-level-${contribution.level})`}
+                      data-github-cell
+                      data-date={formatDate(contribution.date)}
+                      data-count={contribution.count}
+                      aria-label={contributionLabel(contribution)}
+                    >
+                      <span aria-hidden="true"></span>
+                    </button>
+                  ) : (
+                    <span class="github-activity-cell github-activity-cell-empty" aria-hidden="true"></span>
+                  )
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    ) : (
+      <p class="px-1 py-8 text-xs font-mono text-zinc-500">
+        GitHub activity is unavailable right now.
+      </p>
+    )}
+
+    {hasContributions && (
+      <div class="mt-4 flex items-center justify-end gap-2 px-1 text-[10px] font-mono text-zinc-500">
+        <span>Less</span>
+        <span class="github-activity-legend-cell" style="--cell-color: var(--contrib-level-0)"></span>
+        <span class="github-activity-legend-cell" style="--cell-color: var(--contrib-level-1)"></span>
+        <span class="github-activity-legend-cell" style="--cell-color: var(--contrib-level-2)"></span>
+        <span class="github-activity-legend-cell" style="--cell-color: var(--contrib-level-3)"></span>
+        <span class="github-activity-legend-cell" style="--cell-color: var(--contrib-level-4)"></span>
+        <span>More</span>
+      </div>
+    )}
+
+    {repositories.length > 0 && (
+      <div
+        data-github-repository-panel
+        data-state="closed"
+        class="github-activity-panel"
+      >
+        <div class="flex items-center justify-between gap-3 px-3 py-3">
+          <span class="truncate text-sm text-zinc-300">Top PR repositories</span>
+          <div class="flex items-center gap-3">
+            <div data-github-avatars class="flex items-center">
+              {repositories.slice(0, 3).map((repository) => (
+                <span class="github-activity-avatar -ml-2 first:ml-0">
+                  {repository.logo ? (
+                    <img src={repository.logo} alt="" loading="lazy" decoding="async" />
+                  ) : (
+                    repository.name.charAt(0)
+                  )}
+                </span>
+              ))}
+            </div>
+            <button
+              type="button"
+              data-github-repository-toggle
+              aria-expanded="false"
+              aria-controls={panelId}
+              aria-label="Show top repositories"
+              class="github-activity-chevron grid size-7 shrink-0 place-items-center rounded-full bg-zinc-950 text-zinc-400 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m16 10-4 4-4-4"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div id={panelId} data-github-repository-list class="github-activity-repository-list">
+          {repositories.map((repository) => (
+            <a
+              href={repository.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="github-activity-repository-row"
+            >
+              <span class="github-activity-avatar">
+                {repository.logo ? (
+                  <img src={repository.logo} alt="" loading="lazy" decoding="async" />
+                ) : (
+                  repository.name.charAt(0)
+                )}
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-zinc-200">{repository.name}</span>
+              <span class="shrink-0 text-sm tabular-nums text-zinc-500">{repository.count} PR{repository.count === 1 ? "" : "s"}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <div data-github-tooltip class="github-activity-tooltip" role="status" aria-hidden="true"></div>
+  </div>
+
+  {visiblePRs.length > 0 && (
+    <div class="mt-6 flex flex-col gap-5">
+      <div class="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+        Pull requests
+      </div>
+      {visiblePRs.map((pr) => {
+        const merged = Boolean(pr.merged_at);
+        const open = pr.state === "open";
+        const statusLabel = merged ? "merged" : open ? "open" : "closed";
+        const statusColor = merged
+          ? "text-purple-400"
+          : open
+            ? "text-emerald-500"
+            : "text-rose-500";
+        const date = new Date(pr.created_at).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+
+        return (
+          <div class="flex flex-col gap-0.5">
+            <div class="flex items-start justify-between gap-4">
+              <a
+                href={pr.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white transition-colors font-sans tracking-tight"
+              >
+                {pr.title}
+              </a>
+              <span class={`text-[10px] font-mono font-medium uppercase tracking-wider shrink-0 mt-0.5 ${statusColor}`}>
+                ● {statusLabel}
+              </span>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-xs font-mono text-zinc-500">
+              <a
+                href={pr.repo.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:text-zinc-400 transition-colors"
+              >
+                {pr.repo.full_name}
+              </a>
+              <span class="text-amber-400">★ {pr.repo.stars.toLocaleString("en-US")}</span>
+              <span>#{pr.number}</span>
+              <span>{date}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  )}
+</div>
+
+<script>
+  const initializeGitHubActivity = () => {
+    document.querySelectorAll<HTMLElement>("[data-github-activity]").forEach((root) => {
+      if (root.dataset.initialized === "true") return;
+      root.dataset.initialized = "true";
+
+      const tooltip = root.querySelector<HTMLElement>("[data-github-tooltip]");
+      const cells = root.querySelectorAll<HTMLButtonElement>("[data-github-cell]");
+      const panel = root.querySelector<HTMLElement>("[data-github-repository-panel]");
+      const toggle = root.querySelector<HTMLButtonElement>("[data-github-repository-toggle]");
+
+      // Keep viewport coordinates correct even when the card is animated with a transform.
+      if (tooltip && tooltip.parentElement !== document.body) {
+        document.body.append(tooltip);
+      }
+
+      if (tooltip) {
+        const hideTooltip = () => {
+          tooltip.dataset.visible = "false";
+          tooltip.setAttribute("aria-hidden", "true");
+        };
+
+        const showTooltip = (
+          cell: HTMLButtonElement,
+          pointer?: { clientX: number; clientY: number },
+        ) => {
+          const rect = cell.getBoundingClientRect();
+          const clientX = pointer?.clientX ?? rect.left + rect.width / 2;
+          const clientY = pointer?.clientY ?? rect.bottom;
+          const offset = pointer ? 12 : 8;
+          tooltip.textContent = `${cell.dataset.count} ${cell.dataset.count === "1" ? "contribution" : "contributions"} on ${cell.dataset.date}`;
+          tooltip.dataset.visible = "true";
+          tooltip.setAttribute("aria-hidden", "false");
+
+          const halfWidth = tooltip.offsetWidth / 2;
+          const x = Math.min(
+            Math.max(clientX, halfWidth + 8),
+            window.innerWidth - halfWidth - 8,
+          );
+          const belowTop = clientY + offset;
+          const placeBelow = belowTop + tooltip.offsetHeight <= window.innerHeight - 8;
+          tooltip.dataset.placement = placeBelow ? "below" : "above";
+          tooltip.style.left = `${x}px`;
+          tooltip.style.top = `${placeBelow ? belowTop : Math.max(8, clientY - offset)}px`;
+        };
+
+        cells.forEach((cell) => {
+          cell.addEventListener("pointerenter", (event) => {
+            showTooltip(cell, event);
+          });
+          cell.addEventListener("pointermove", (event) => {
+            showTooltip(cell, event);
+          });
+          cell.addEventListener("pointerleave", hideTooltip);
+          cell.addEventListener("focus", () => showTooltip(cell));
+          cell.addEventListener("blur", hideTooltip);
+        });
+
+        root.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") hideTooltip();
+        });
+      }
+
+      if (panel && toggle) {
+        toggle.addEventListener("click", () => {
+          const open = panel.dataset.state === "open";
+          panel.dataset.state = open ? "closed" : "open";
+          toggle.setAttribute("aria-expanded", String(!open));
+          toggle.setAttribute("aria-label", open ? "Show top repositories" : "Hide top repositories");
+        });
+      }
+    });
+  };
+
+  const cleanupGitHubActivity = () => {
+    document.querySelectorAll<HTMLElement>("[data-github-tooltip]").forEach((tooltip) => {
+      if (tooltip.parentElement === document.body) tooltip.remove();
+    });
+  };
+
+  initializeGitHubActivity();
+  document.addEventListener("astro:before-swap", cleanupGitHubActivity);
+  document.addEventListener("astro:after-swap", initializeGitHubActivity);
+</script>
+
+<style>
+  .github-activity-card {
+    --github-cell-size: 10px;
+    --github-cell-gap: 3px;
+    border-radius: 20px;
+    background-color: var(--code-bg);
+  }
+
+  .github-activity-grid-frame {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.25rem 0.25rem 0.5rem;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    touch-action: pan-x;
+  }
+
+  .github-activity-grid {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .github-activity-months,
+  .github-activity-weeks {
+    display: flex;
+    justify-content: center;
+    gap: var(--github-cell-gap);
+  }
+
+  .github-activity-month,
+  .github-activity-week {
+    flex: 0 0 var(--github-cell-size);
+    width: var(--github-cell-size);
+  }
+
+  .github-activity-month {
+    height: 1rem;
+    color: var(--text-mono);
+    font-family: var(--font-code);
+    font-size: 9px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .github-activity-week {
+    display: flex;
+    flex-direction: column;
+    gap: var(--github-cell-gap);
+  }
+
+  .github-activity-cell {
+    display: block;
+    width: var(--github-cell-size);
+    height: var(--github-cell-size);
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
+    background: transparent;
+    cursor: help;
+  }
+
+  .github-activity-cell-empty {
+    background: transparent;
+    cursor: default;
+  }
+
+  .github-activity-cell span,
+  .github-activity-legend-cell {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
+    background: var(--cell-color);
+  }
+
+  .github-activity-cell:hover span {
+    outline: 1px solid var(--text-heading);
+    outline-offset: 1px;
+  }
+
+  .github-activity-cell:focus-visible {
+    outline: 2px solid var(--text-heading);
+    outline-offset: 2px;
+  }
+
+  .github-activity-legend-cell {
+    width: 9px;
+    height: 9px;
+  }
+
+  .github-activity-panel {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    z-index: 2;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--border-color) 90%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--code-bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    transition: top 0.35s ease, background-color 0.2s ease;
+  }
+
+  .github-activity-panel[data-state="open"] {
+    top: 0.75rem;
+  }
+
+  .github-activity-avatar {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    place-items: center;
+    overflow: hidden;
+    border: 2px solid var(--code-bg);
+    border-radius: 999px;
+    background: var(--border-color);
+    color: var(--text-color);
+    font-family: var(--font-code);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .github-activity-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .github-activity-chevron svg {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.35s ease;
+  }
+
+  .github-activity-panel[data-state="open"] .github-activity-chevron svg {
+    transform: rotate(180deg);
+  }
+
+  .github-activity-repository-list {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.35s ease;
+  }
+
+  .github-activity-panel[data-state="open"] .github-activity-repository-list {
+    max-height: 20rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .github-activity-repository-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    transition: background-color 0.2s ease;
+  }
+
+  .github-activity-repository-row:hover {
+    background-color: color-mix(in srgb, var(--text-heading) 6%, transparent);
+  }
+
+  .github-activity-repository-row:focus-visible,
+  .github-activity-panel button:focus-visible {
+    outline: 2px solid var(--text-heading);
+    outline-offset: 2px;
+  }
+
+  .github-activity-tooltip {
+    position: fixed;
+    z-index: 50;
+    max-width: calc(100vw - 1rem);
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.5rem;
+    background: var(--text-heading);
+    color: var(--bg-color);
+    font-family: var(--font-code);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.2;
+    pointer-events: none;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.96);
+    transition: opacity 0.14s ease, transform 0.14s ease;
+  }
+
+  .github-activity-tooltip[data-placement="above"] {
+    transform: translate(-50%, -100%) scale(0.96);
+  }
+
+  .github-activity-tooltip[data-visible="true"] {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  .github-activity-tooltip[data-visible="true"][data-placement="above"] {
+    transform: translate(-50%, -100%) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .github-activity-panel,
+    .github-activity-chevron svg,
+    .github-activity-repository-list,
+    .github-activity-repository-row,
+    .github-activity-tooltip {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .github-activity-card {
+      --github-cell-size: 9px;
+      --github-cell-gap: 2px;
+      padding: 0.75rem;
+    }
+  }
+</style>
