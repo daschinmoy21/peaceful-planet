@@ -1,3 +1,11 @@
+export type ContributionLevel = 0 | 1 | 2 | 3 | 4;
+
+export interface GitHubContribution {
+  date: string;
+  count: number;
+  level: ContributionLevel;
+}
+
 export interface GitHubPR {
   id: string;
   title: string;
@@ -15,13 +23,44 @@ export interface GitHubPR {
   };
 }
 
-const MIN_STARS = 100;
-const GITHUB_USER = "daschinmoy21";
+export interface GitHubRepositoryActivity {
+  name: string;
+  count: number;
+  href: string;
+  stars: number;
+  logo?: string;
+}
 
-/** Exclude own repos so personal project PRs don't flood the window before star filtering. */
+export interface GitHubActivityData {
+  contributions: GitHubContribution[];
+  weeks: GitHubContribution[][];
+  monthLabels: { label: string; column: number }[];
+  total: number;
+  year: number | null;
+  prs: GitHubPR[];
+  repositories: GitHubRepositoryActivity[];
+}
+
+const GITHUB_USER = "daschinmoy21";
+const MIN_STARS = 100;
 const PR_SEARCH_BASE = `author:${GITHUB_USER} type:pr -user:${GITHUB_USER}`;
-/** GraphQL Search accepts sort qualifiers in the query string. */
 const PR_SEARCH_GRAPHQL = `${PR_SEARCH_BASE} sort:updated-desc`;
+const CONTRIBUTION_CALENDAR_API = `https://github-contributions-api.jogruber.de/v4/${GITHUB_USER}?y=last`;
+const WEEKS_PER_YEAR = 53;
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 const GRAPHQL_QUERY = `
 query {
@@ -48,7 +87,6 @@ query {
 }`;
 
 function readEnv(name: string): string | undefined {
-  // CI / Node inject process.env; Vite/Astro also expose .env via import.meta.env.
   const fromProcess =
     typeof process !== "undefined" ? process.env[name] : undefined;
   const fromVite = (import.meta.env as Record<string, string | undefined>)[name];
@@ -57,87 +95,139 @@ function readEnv(name: string): string | undefined {
 }
 
 function getGithubToken(): string | undefined {
-  // Prefer a PAT if set (higher rate limits); fall back to Actions GITHUB_TOKEN.
   return readEnv("GH_PAT") || readEnv("GH_TOKEN") || readEnv("GITHUB_TOKEN");
 }
 
-/** Single-flight so home + /oss share one result during the static build. */
-let _cached: Promise<GitHubPR[]> | null = null;
-
-export async function fetchGitHubPRs(): Promise<GitHubPR[]> {
-  if (_cached) return _cached;
-  _cached = _fetchGitHubPRs().catch((err) => {
-    // Allow a later page to retry if this attempt failed hard.
-    _cached = null;
-    throw err;
-  });
-  return _cached;
-}
-
-function logPrSummary(source: string, prs: GitHubPR[]): GitHubPR[] {
-  const sample = prs
-    .slice(0, 3)
-    .map((p) => `${p.repo.full_name}★${p.repo.stars}`)
-    .join(", ");
-  console.log(
-    `[github] ${source}: ${prs.length} PRs with ≥${MIN_STARS} stars` +
-      (sample ? ` (e.g. ${sample})` : ""),
-  );
-  return prs;
-}
-
-async function _fetchGitHubPRs(): Promise<GitHubPR[]> {
+function getGithubHeaders(): Record<string, string> {
   const token = getGithubToken();
-  const headers: Record<string, string> = {
-    Accept: "application/json",
+  return {
+    Accept: "application/vnd.github+json",
     "User-Agent": "peaceful-planet",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-    console.log("[github] using authenticated GitHub API");
-  } else {
-    console.warn(
-      "[github] no GITHUB_TOKEN/GH_TOKEN — unauthenticated rate limits may drop star counts",
-    );
-  }
-
-  // Prefer GraphQL: one request returns PRs + stargazerCount (no N+1).
-  if (token) {
-    try {
-      return logPrSummary("GraphQL", await fetchViaGraphQL(headers));
-    } catch (err) {
-      console.error(
-        "[github] GraphQL PR fetch failed, falling back to REST:",
-        err,
-      );
-    }
-  }
-
-  return logPrSummary("REST", await fetchViaRest(headers));
 }
 
-function mapGraphQLNode(n: any): GitHubPR | null {
-  if (!n?.repository || !n.title) return null;
-  const stars = Number(n.repository.stargazerCount ?? 0);
+function emptyActivity(): GitHubActivityData {
+  return {
+    contributions: [],
+    weeks: [],
+    monthLabels: [],
+    total: 0,
+    year: null,
+    prs: [],
+    repositories: [],
+  };
+}
+
+function normalizeLevel(level: unknown): ContributionLevel {
+  const value = Number(level);
+  if (!Number.isFinite(value)) return 0;
+  return Math.min(4, Math.max(0, Math.round(value))) as ContributionLevel;
+}
+
+function toWeeks(contributions: GitHubContribution[]): GitHubContribution[][] {
+  const firstSunday = contributions.findIndex(
+    (contribution) =>
+      new Date(`${contribution.date}T00:00:00Z`).getUTCDay() === 0,
+  );
+  const sundayAligned = contributions.slice(firstSunday < 0 ? 0 : firstSunday);
+  return Array.from(
+    { length: Math.ceil(sundayAligned.length / 7) },
+    (_, index) => sundayAligned.slice(index * 7, index * 7 + 7),
+  ).slice(-WEEKS_PER_YEAR);
+}
+
+function getMonthLabels(weeks: GitHubContribution[][]) {
+  const labels: { label: string; column: number }[] = [];
+  const seen = new Set<string>();
+
+  weeks.forEach((week, column) => {
+    const monthStart = week.find(
+      (contribution) => contribution.date.slice(8, 10) === "01",
+    );
+    if (!monthStart) return;
+
+    const month = monthStart.date.slice(0, 7);
+    if (seen.has(month)) return;
+    seen.add(month);
+    labels.push({
+      label: MONTH_NAMES[Number(month.slice(5, 7)) - 1] ?? "",
+      column,
+    });
+  });
+
+  return labels;
+}
+
+async function fetchContributions(): Promise<GitHubActivityData> {
+  try {
+    const response = await fetch(CONTRIBUTION_CALENDAR_API);
+    if (!response.ok) {
+      throw new Error(`Contribution API failed: ${response.status}`);
+    }
+
+    const body = await response.json();
+    const contributions = (
+      Array.isArray(body?.contributions) ? body.contributions : []
+    )
+      .map(
+        (contribution: {
+          date?: unknown;
+          count?: unknown;
+          level?: unknown;
+        }) => ({
+          date: String(contribution.date ?? ""),
+          count: Math.max(0, Number(contribution.count) || 0),
+          level: normalizeLevel(contribution.level),
+        }),
+      )
+      .filter((contribution: GitHubContribution) =>
+        /^\d{4}-\d{2}-\d{2}$/.test(contribution.date),
+      )
+      .sort((a: GitHubContribution, b: GitHubContribution) =>
+        a.date.localeCompare(b.date),
+      );
+    const weeks = toWeeks(contributions);
+    const visibleContributions = weeks.flat();
+
+    return {
+      contributions: visibleContributions,
+      weeks,
+      monthLabels: getMonthLabels(weeks),
+      total: visibleContributions.reduce(
+        (sum, contribution) => sum + contribution.count,
+        0,
+      ),
+      year: visibleContributions.length
+        ? Number(visibleContributions.at(-1)?.date.slice(0, 4))
+        : null,
+      prs: [],
+      repositories: [],
+    };
+  } catch (error) {
+    console.error("Failed to fetch GitHub contributions:", error);
+    return emptyActivity();
+  }
+}
+
+function mapGraphQLNode(node: any): GitHubPR | null {
+  if (!node?.repository || !node.title) return null;
+  const stars = Number(node.repository.stargazerCount ?? 0);
   if (!Number.isFinite(stars) || stars < MIN_STARS) return null;
 
-  // GraphQL uses OPEN | CLOSED | MERGED; UI only models open | closed.
-  const raw = String(n.state ?? "").toLowerCase();
-  const state: GitHubPR["state"] = raw === "open" ? "open" : "closed";
-
   return {
-    id: String(n.id),
-    title: n.title,
-    state,
-    html_url: n.url,
-    created_at: n.createdAt,
-    closed_at: n.closedAt ?? null,
-    merged_at: n.mergedAt ?? null,
-    number: n.number,
+    id: String(node.id),
+    title: node.title,
+    state: String(node.state ?? "").toLowerCase() === "open" ? "open" : "closed",
+    html_url: node.url,
+    created_at: node.createdAt,
+    closed_at: node.closedAt ?? null,
+    merged_at: node.mergedAt ?? null,
+    number: node.number,
     repo: {
-      name: n.repository.name,
-      full_name: n.repository.nameWithOwner,
-      html_url: n.repository.url,
+      name: node.repository.name,
+      full_name: node.repository.nameWithOwner,
+      html_url: node.repository.url,
       stars,
     },
   };
@@ -146,53 +236,42 @@ function mapGraphQLNode(n: any): GitHubPR | null {
 async function fetchViaGraphQL(
   headers: Record<string, string>,
 ): Promise<GitHubPR[]> {
-  const res = await fetch("https://api.github.com/graphql", {
+  const response = await fetch("https://api.github.com/graphql", {
     method: "POST",
-    headers: {
-      ...headers,
-      "Content-Type": "application/json",
-    },
+    headers: { ...headers, "Content-Type": "application/json" },
     body: JSON.stringify({ query: GRAPHQL_QUERY }),
   });
-  if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new Error(`GraphQL failed: ${res.status} ${body.slice(0, 200)}`);
+  if (!response.ok) {
+    throw new Error(`GraphQL failed: ${response.status}`);
   }
-  const json = await res.json();
-  if (json.errors?.length) throw new Error(JSON.stringify(json.errors));
 
-  const nodes: any[] = json.data?.search?.nodes ?? [];
-  return nodes
+  const body = await response.json();
+  if (body.errors?.length) throw new Error(JSON.stringify(body.errors));
+
+  return (body.data?.search?.nodes ?? [])
     .map(mapGraphQLNode)
-    .filter((p: GitHubPR | null): p is GitHubPR => p !== null);
+    .filter((pr: GitHubPR | null): pr is GitHubPR => pr !== null);
 }
 
-/** Fetch stargazer counts for unique repos (parallel, cached). */
 async function fetchRepoStars(
-  repos: string[],
+  repositories: string[],
   headers: Record<string, string>,
 ): Promise<Map<string, number>> {
-  const unique = [...new Set(repos)];
   const stars = new Map<string, number>();
 
   await Promise.all(
-    unique.map(async (repoFull) => {
+    [...new Set(repositories)].map(async (repository) => {
       try {
-        const rr = await fetch(`https://api.github.com/repos/${repoFull}`, {
-          headers,
-        });
-        if (!rr.ok) {
-          console.warn(
-            `[github] repo stars failed for ${repoFull}: HTTP ${rr.status}`,
-          );
-          // Do not store 0 — unknown is different from a true zero-star repo.
-          return;
-        }
-        const body = await rr.json();
+        const response = await fetch(
+          `https://api.github.com/repos/${repository}`,
+          { headers },
+        );
+        if (!response.ok) return;
+        const body = await response.json();
         const count = Number(body.stargazers_count);
-        if (Number.isFinite(count)) stars.set(repoFull, count);
-      } catch (err) {
-        console.warn(`[github] repo stars error for ${repoFull}:`, err);
+        if (Number.isFinite(count)) stars.set(repository, count);
+      } catch (error) {
+        console.warn(`Failed to fetch stars for ${repository}:`, error);
       }
     }),
   );
@@ -209,101 +288,129 @@ async function fetchViaRest(
     order: "desc",
     per_page: "50",
   });
-  const restHeaders = {
-    ...headers,
-    Accept: "application/vnd.github+json",
-  };
-
-  const res = await fetch(
+  const response = await fetch(
     `https://api.github.com/search/issues?${params}`,
-    { headers: restHeaders },
+    { headers },
   );
-  if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new Error(`REST search failed: ${res.status} ${body.slice(0, 200)}`);
+  if (!response.ok) {
+    throw new Error(`REST search failed: ${response.status}`);
   }
 
-  const data = await res.json();
-  const rawItems: any[] = data.items ?? [];
-
-  const repoNames = rawItems
+  const body = await response.json();
+  const rawItems: any[] = body.items ?? [];
+  const repositoryNames = rawItems
     .map((item) =>
       item?.repository_url
         ? item.repository_url.replace("https://api.github.com/repos/", "")
         : null,
     )
-    .filter((r: string | null): r is string => !!r);
+    .filter((repository): repository is string => Boolean(repository));
+  const repoStars = await fetchRepoStars(repositoryNames, headers);
 
-  const repoStars = await fetchRepoStars(repoNames, restHeaders);
-
-  if (repoStars.size === 0 && rawItems.length > 0) {
-    console.error(
-      "[github] could not load any repo star counts — refusing to render ★0 placeholders",
-    );
-    return [];
-  }
-
-  const items: GitHubPR[] = [];
-  for (const item of rawItems) {
-    if (!item?.repository_url) continue;
-
-    const repoFull = item.repository_url.replace(
+  return rawItems.flatMap((item) => {
+    if (!item?.repository_url) return [];
+    const fullName = item.repository_url.replace(
       "https://api.github.com/repos/",
       "",
     );
+    const stars = repoStars.get(fullName);
+    if (stars === undefined || stars < MIN_STARS) return [];
 
-    // Skip when star count is unknown (rate limit) or below threshold.
-    if (!repoStars.has(repoFull)) continue;
-    const stars = repoStars.get(repoFull)!;
-    if (stars < MIN_STARS) continue;
-
-    // Search results already include pull_request.merged_at — no N+1 fetch.
-    const mergedAt: string | null = item.pull_request?.merged_at ?? null;
-
-    items.push({
-      id: String(item.id),
-      title: item.title,
-      state: item.state as GitHubPR["state"],
-      html_url: item.html_url,
-      created_at: item.created_at,
-      closed_at: item.closed_at || null,
-      merged_at: mergedAt,
-      number: item.number,
-      repo: {
-        name: repoFull.split("/").slice(-1)[0],
-        full_name: repoFull,
-        html_url: `https://github.com/${repoFull}`,
-        stars,
+    return [
+      {
+        id: String(item.id),
+        title: item.title,
+        state: item.state as GitHubPR["state"],
+        html_url: item.html_url,
+        created_at: item.created_at,
+        closed_at: item.closed_at || null,
+        merged_at: item.pull_request?.merged_at ?? null,
+        number: item.number,
+        repo: {
+          name: fullName.split("/").at(-1) ?? fullName,
+          full_name: fullName,
+          html_url: `https://github.com/${fullName}`,
+          stars,
+        },
       },
-    });
-  }
-  return items;
+    ];
+  });
 }
 
-let _contribCached: Promise<string> | null = null;
+let prsCached: Promise<GitHubPR[]> | null = null;
 
-export async function fetchGitHubContributionsTable(): Promise<string> {
-  if (_contribCached) return _contribCached;
-  const promise = (async () => {
-    try {
-      const res = await fetch(
-        `https://github.com/users/${GITHUB_USER}/contributions`,
-      );
-      if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
-      const html = await res.text();
-      const tableMatch = html.match(
-        /<table[^>]*ContributionCalendar-grid[^>]*>([\s\S]*?)<\/table>/,
-      );
-      if (!tableMatch) return "";
-      return tableMatch[0]
-        .replace(/\s*data-hydro-click="[^"]*"/g, "")
-        .replace(/\s*data-hydro-click-hmac="[^"]*"/g, "")
-        .replace(/\s*id="[^"]*"/g, "");
-    } catch (err) {
-      console.error("Failed to fetch GitHub contributions:", err);
-      return "";
+async function fetchGitHubPRs(): Promise<GitHubPR[]> {
+  if (prsCached) return prsCached;
+
+  const headers = getGithubHeaders();
+  prsCached = (async () => {
+    const token = getGithubToken();
+    if (token) {
+      try {
+        return await fetchViaGraphQL(headers);
+      } catch (error) {
+        console.warn("GitHub GraphQL PR search failed, using REST:", error);
+      }
     }
-  })();
-  _contribCached = promise;
-  return promise;
+    return fetchViaRest(headers);
+  })().catch((error) => {
+    prsCached = null;
+    throw error;
+  });
+
+  return prsCached;
+}
+
+function getRepositories(prs: GitHubPR[]): GitHubRepositoryActivity[] {
+  const repositories = new Map<string, GitHubRepositoryActivity>();
+
+  for (const pr of prs) {
+    const current = repositories.get(pr.repo.full_name);
+    if (current) {
+      current.count += 1;
+      continue;
+    }
+
+    const [owner, name] = pr.repo.full_name.split("/");
+    repositories.set(pr.repo.full_name, {
+      name: name || pr.repo.full_name,
+      count: 1,
+      href: pr.repo.html_url,
+      stars: pr.repo.stars,
+      logo: owner ? `https://github.com/${owner}.png?size=64` : undefined,
+    });
+  }
+
+  return [...repositories.values()]
+    .sort(
+      (first, second) =>
+        second.count - first.count ||
+        second.stars - first.stars ||
+        first.name.localeCompare(second.name),
+    )
+    .slice(0, 12);
+}
+
+let activityCached: Promise<GitHubActivityData> | null = null;
+
+export async function fetchGitHubActivity(): Promise<GitHubActivityData> {
+  if (activityCached) return activityCached;
+
+  activityCached = Promise.all([
+    fetchContributions(),
+    fetchGitHubPRs().catch((error) => {
+      console.error("Failed to fetch GitHub pull requests:", error);
+      return [];
+    }),
+  ]).then(([activity, prs]) => ({
+    ...activity,
+    prs,
+    repositories: getRepositories(prs),
+  }))
+    .catch((error) => {
+      activityCached = null;
+      throw error;
+    });
+
+  return activityCached;
 }

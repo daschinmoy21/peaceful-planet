@@ -1,16 +1,24 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import OpenSource from "../components/OpenSource.astro";
-import { fetchGitHubPRs } from "@/utils/github";
+import GitHubActivity from "../components/GitHubActivity.astro";
+import { fetchGitHubActivity } from "@/utils/github";
 
-const prs = await fetchGitHubPRs().catch((err) => {
-  console.error("[oss] failed to fetch PRs for /oss:", err);
-  return [];
+const activity = await fetchGitHubActivity().catch((err) => {
+  console.error("[github] failed to fetch activity for /oss:", err);
+  return {
+    contributions: [],
+    weeks: [],
+    monthLabels: [],
+    total: 0,
+    year: null,
+    prs: [],
+    repositories: [],
+  };
 });
 ---
 
 <Layout>
   <div class="py-6">
-    <OpenSource prs={prs} graphPosition="top" />
+    <GitHubActivity activity={activity} />
   </div>
 </Layout>

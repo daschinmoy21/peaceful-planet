@@ -264,37 +264,6 @@ html.light ::selection {
   animation: fade-in-up 0.4s ease-out forwards;
 }
 
-/* GitHub calendar table grid styling */
-.ContributionCalendar-grid {
-  width: max-content;
-  margin: 0 auto;
-  border-collapse: separate !important;
-  border-spacing: 2px !important;
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.ContributionCalendar-grid tr,
-.ContributionCalendar-grid td,
-.ContributionCalendar-grid th {
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-
-.ContributionCalendar-grid .sr-only {
-  display: none !important;
-}
-
-.ContributionCalendar-day {
-  width: 8px !important;
-  height: 8px !important;
-  border-radius: 1px !important;
-}
-
-
 :root {
   --contrib-level-0: #101012;
   --contrib-level-1: #0e4429;
@@ -309,34 +278,6 @@ html.light {
   --contrib-level-2: #40c463;
   --contrib-level-3: #30a14e;
   --contrib-level-4: #216e39;
-}
-
-.ContributionCalendar-day[data-level="0"] { background-color: var(--contrib-level-0) !important; }
-.ContributionCalendar-day[data-level="1"] { background-color: var(--contrib-level-1) !important; }
-.ContributionCalendar-day[data-level="2"] { background-color: var(--contrib-level-2) !important; }
-.ContributionCalendar-day[data-level="3"] { background-color: var(--contrib-level-3) !important; }
-.ContributionCalendar-day[data-level="4"] { background-color: var(--contrib-level-4) !important; }
-
-.ContributionCalendar-label {
-  font-family: var(--mono) !important;
-  font-size: 9px !important;
-  color: var(--text-mono) !important;
-}
-
-/* Hide extra headings/info in github grid if they exist */
-.ContributionCalendar h2, .ContributionCalendar .float-left {
-  display: none !important;
-}
-.github-calendar-wrapper {
-  background-color: transparent !important;
-}
-.graph-before-activity-overview {
-  border: none !important;
-  padding: 0 !important;
-}
-.github-calendar-card {
-  background-color: transparent !important;
-  border-color: var(--border) !important;
 }
 
 

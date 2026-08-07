@@ -4,16 +4,24 @@ import Header from "../components/Header.astro";
 import Skills from "../components/Skills.astro";
 import Projects from "../components/Projects.astro";
 import Experience from "../components/Experience.astro";
-import OpenSource from "../components/OpenSource.astro";
+import GitHubActivity from "../components/GitHubActivity.astro";
 import Contact from "../components/Contact.astro";
 import HomePosts from "../components/HomePosts.astro";
 import { getSortedFilteredPosts } from "@/utils/chiri/draft";
-import { fetchGitHubPRs } from "@/utils/github";
+import { fetchGitHubActivity } from "@/utils/github";
 
 const posts = await getSortedFilteredPosts();
-const prs = await fetchGitHubPRs().catch((err) => {
-	console.error("[oss] failed to fetch PRs for home:", err);
-	return [];
+const activity = await fetchGitHubActivity().catch((err) => {
+	console.error("[github] failed to fetch activity for home:", err);
+	return {
+		contributions: [],
+		weeks: [],
+		monthLabels: [],
+		total: 0,
+		year: null,
+		prs: [],
+		repositories: [],
+	};
 });
 ---
 
@@ -21,7 +29,7 @@ const prs = await fetchGitHubPRs().catch((err) => {
 	<Header />
 	<Skills />
 	<Projects limit={3} />
-	<OpenSource prs={prs} limit={3} />
+	<GitHubActivity activity={activity} repositoryLimit={3} prLimit={3} showViewAll />
 	<Experience />
 	<HomePosts posts={posts.slice(0, 3)} />
 	<div class="border-t border-zinc-950 my-6"></div>
