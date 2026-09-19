@@ -32,6 +32,5 @@ const activity = await fetchGitHubActivity().catch((err) => {
 	<GitHubActivity activity={activity} repositoryLimit={3} prLimit={3} showViewAll />
 	<Experience />
 	<HomePosts posts={posts.slice(0, 3)} />
-	<div class="border-t border-zinc-950 my-6"></div>
 	<Contact />
 </Layout>

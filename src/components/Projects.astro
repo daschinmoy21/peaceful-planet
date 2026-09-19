@@ -13,6 +13,8 @@ const projects = [
     statusColor: "text-emerald-500",
     linkText: "github.com/daschinmoy21/russel",
     link: "https://github.com/daschinmoy21/russel",
+    liveLinkText: "russel.chinmoy.site",
+    liveLink: "https://russel.chinmoy.site",
   },
   {
     title: "Logia",
@@ -63,7 +65,7 @@ const projects = [
 const visibleProjects = limit ? projects.slice(0, limit) : projects;
 ---
 
-<div class="max-w-2xl mx-auto py-6">
+<div class="site-section" data-reveal>
   <div class="section-heading-row">
     <h2 class="section-heading">Projects</h2>
     {limit && (

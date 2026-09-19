@@ -48,7 +48,8 @@
 
 :root {
   /* Default Dark Theme Variables */
-  --bg-color: #050505;
+  --bg-color: #000000; /* AMOLED page + gaps between sections */
+  --section-bg: #0a0a0a; /* framed section cards — just a tad lighter than AMOLED */
   --text-color: #a1a1aa; /* zinc-400 */
   --text-heading: #ffffff;
   --text-muted: #52525b; /* zinc-600 */
@@ -56,7 +57,7 @@
   --border-color: #18181b; /* zinc-900 */
   --code-bg: #09090b;
   --code-border: #18181b;
-  --nav-bg-rgb: 5, 5, 5;
+  --nav-bg-rgb: 0, 0, 0;
 
   /* Shared type tokens (portfolio + chiri/blog) */
   --sans: "Space Grotesk", system-ui, sans-serif;
@@ -117,6 +118,24 @@ body {
   @apply antialiased min-h-screen relative font-sans transition-colors duration-200;
 }
 
+/* Content column sits on AMOLED; individual .site-section cards provide lift */
+.site-shell {
+  min-height: calc(100vh - 3.5rem);
+}
+
+.site-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.site-section {
+  background-color: var(--section-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.125rem;
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+
 /* Space Grotesk tops out at 700 — avoid synthetic 800/900 bold */
 .font-extrabold,
 .font-black {
@@ -139,6 +158,11 @@ pre code,
 h1, h2, h3, h4, h5, h6, .text-white, .text-zinc-100, .text-zinc-200 {
   color: var(--text-heading) !important;
   @apply transition-colors duration-200;
+}
+
+/* Banner name sits on the gif — stay white in light and dark */
+.banner-title {
+  color: #ffffff !important;
 }
 
 /* Shared section titles (Projects, Skills, etc.) — shaded bar + accent */
