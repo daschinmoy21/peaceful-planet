@@ -12,8 +12,8 @@ import Footer from "@/components/Footer.astro";
 		<link rel="icon" type="image/png" href="/moon.jpg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Chinmoy Das</title>
-		<link rel="preload" href="/fonts/space-grotesk-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="preload" href="/fonts/space-grotesk-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link rel="alternate" type="application/rss+xml" title="Chinmoy Das's Blog RSS Feed" href="/rss.xml" />
 		<link rel="alternate" type="application/atom+xml" title="Chinmoy Das's Blog Atom Feed" href="/atom.xml" />
 		<script is:inline>
@@ -32,22 +32,22 @@ import Footer from "@/components/Footer.astro";
 		</script>
 	<style is:global>
     :root {
-      --bg-color: #000000;
-      --section-bg: #0a0a0a;
-      --text-color: #a1a1aa;
-      --text-heading: #ffffff;
-      --text-muted: #52525b;
-      --text-mono: #71717a;
-      --border-color: #18181b;
-      --code-bg: #09090b;
-      --code-border: #18181b;
-      --nav-bg-rgb: 0, 0, 0;
+      --bg-color: #141414;
+      --section-bg: transparent;
+      --text-color: #a8a6a0;
+      --text-heading: #e6e4de;
+      --text-muted: #4a4946;
+      --text-mono: #75736d;
+      --border-color: #262625;
+      --code-bg: #1a1a19;
+      --code-border: #262625;
+      --nav-bg-rgb: 20, 20, 20;
       --text-primary: rgba(255, 255, 255, 0.9);
       --text-secondary: rgba(255, 255, 255, 0.45);
       --text-tertiary: rgba(255, 255, 255, 0.24);
       --border: rgba(255, 255, 255, 0.1);
       --astro-code-foreground: #abb2bf;
-      --astro-code-background: #09090b;
+      --astro-code-background: #1a1a19;
       --astro-code-token-constant: #d19a66;
       --astro-code-token-string: #98c379;
       --astro-code-token-comment: #5c6370;
@@ -58,7 +58,7 @@ import Footer from "@/components/Footer.astro";
       --astro-code-token-punctuation: #abb2bf;
       --astro-code-token-link: #56b6c2;
       --shiki-color-text: #abb2bf;
-      --shiki-color-background: #09090b;
+      --shiki-color-background: #1a1a19;
       --shiki-token-constant: #d19a66;
       --shiki-token-string: #98c379;
       --shiki-token-comment: #5c6370;
@@ -71,16 +71,16 @@ import Footer from "@/components/Footer.astro";
     }
 
     :root.light {
-      --bg-color: #f4f4f5;
-      --section-bg: #fafafa;
-      --text-color: #18181b;
-      --text-heading: #000000;
-      --text-muted: #a1a1aa;
-      --text-mono: #71717a;
-      --border-color: #e4e4e7;
-      --code-bg: #f4f4f5;
-      --code-border: #e4e4e7;
-      --nav-bg-rgb: 244, 244, 245;
+      --bg-color: #efeee9;
+      --section-bg: transparent;
+      --text-color: #3d3c38;
+      --text-heading: #161614;
+      --text-muted: #b4b2aa;
+      --text-mono: #7a786f;
+      --border-color: #dcdad2;
+      --code-bg: #e7e5de;
+      --code-border: #dcdad2;
+      --nav-bg-rgb: 239, 238, 233;
       --text-primary: rgba(0, 0, 0, 0.85);
       --text-secondary: rgba(0, 0, 0, 0.45);
       --text-tertiary: rgba(0, 0, 0, 0.24);
@@ -113,8 +113,8 @@ import Footer from "@/components/Footer.astro";
 	</head>
 	<body class="min-h-screen pb-16">
 		<Navbar />
-		<div class="site-shell max-w-2xl mx-auto px-6">
-			<main class="site-sections pt-2 pb-6">
+		<div class="site-shell max-w-2xl mx-auto px-4 sm:px-6">
+			<main class="site-sections pt-6 pb-10">
 				<slot />
 			</main>
 			<Footer />

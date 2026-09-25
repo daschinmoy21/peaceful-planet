@@ -1,85 +1,56 @@
-@font-face {
-  font-family: 'Space Grotesk';
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: url('/fonts/space-grotesk-latin-300-normal.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Space Grotesk';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/space-grotesk-latin-400-normal.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Space Grotesk';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('/fonts/space-grotesk-latin-500-normal.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Space Grotesk';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('/fonts/space-grotesk-latin-600-normal.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Space Grotesk';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/space-grotesk-latin-700-normal.woff2') format('woff2');
-}
-
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 @plugin "daisyui";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* Single UI typeface — hierarchy comes from size/weight/tracking, not mixed families */
-  --font-sans: "Space Grotesk", system-ui, sans-serif;
-  --font-mono: "Space Grotesk", system-ui, sans-serif;
-  /* True monospace reserved for code (see pre/code rules below) */
-  --font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  /* Terminal aesthetic — one monospace face everywhere; hierarchy comes from case, tracking and tone */
+  --font-sans: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-code: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
 :root {
-  /* Default Dark Theme Variables */
-  --bg-color: #000000; /* AMOLED page + gaps between sections */
-  --section-bg: #0a0a0a; /* framed section cards — just a tad lighter than AMOLED */
-  --text-color: #a1a1aa; /* zinc-400 */
-  --text-heading: #ffffff;
-  --text-muted: #52525b; /* zinc-600 */
-  --text-mono: #71717a; /* zinc-500 */
-  --border-color: #18181b; /* zinc-900 */
-  --code-bg: #09090b;
-  --code-border: #18181b;
-  --nav-bg-rgb: 0, 0, 0;
+  /* Default Dark Theme Variables — warm charcoal, not AMOLED */
+  --bg-color: #141414;
+  --section-bg: transparent;
+  --text-color: #a8a6a0;
+  --text-heading: #e6e4de;
+  --text-muted: #4a4946;
+  --text-mono: #75736d;
+  --border-color: #262625;
+  --code-bg: #1a1a19;
+  --code-border: #262625;
+  --nav-bg-rgb: 20, 20, 20;
+
+  /* Status accents — muted, low-chroma */
+  --ok: #a9b98a;
+  --warn: #d4b36c;
+  --err: #d98a74;
+  --info: #a99bc4;
+  --hatch: #8f8d87;
 
   /* Shared type tokens (portfolio + chiri/blog) */
-  --sans: "Space Grotesk", system-ui, sans-serif;
+  --sans: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --serif: Besley, Baskerville, Georgia, Cambria, "Times New Roman", Times, serif;
-  --mono: "Space Grotesk", system-ui, sans-serif;
-  --font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --font-size-s: 0.95rem;
-  --font-size-m: 1.1rem;
-  --font-size-l: 1.25rem;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-code: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --font-size-s: 0.9rem;
+  --font-size-m: 1rem;
+  --font-size-l: 1.15rem;
   --font-weight-light: 400;
   --font-weight-regular: 400;
   --font-weight-bold: 600;
 
   /* Legacy Chiri variables compatibility */
-  --text-primary: rgba(255, 255, 255, 0.9);
-  --text-secondary: rgba(255, 255, 255, 0.45);
-  --text-tertiary: rgba(255, 255, 255, 0.24);
-  --border: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(230, 228, 222, 0.9);
+  --text-secondary: rgba(230, 228, 222, 0.45);
+  --text-tertiary: rgba(230, 228, 222, 0.24);
+  --border: rgba(230, 228, 222, 0.1);
 
   /* Shiki Syntax Highlighting Variables (Dark - Atom One Dark / One Dark Pro) */
   --astro-code-foreground: #abb2bf;
-  --astro-code-background: #09090b;
+  --astro-code-background: #1a1a19;
   --astro-code-token-constant: #d19a66;
   --astro-code-token-string: #98c379;
   --astro-code-token-comment: #5c6370;
@@ -91,7 +62,7 @@
   --astro-code-token-link: #56b6c2;
 
   --shiki-color-text: #abb2bf;
-  --shiki-color-background: #09090b;
+  --shiki-color-background: #1a1a19;
   --shiki-token-constant: #d19a66;
   --shiki-token-string: #98c379;
   --shiki-token-comment: #5c6370;
@@ -103,22 +74,30 @@
   --shiki-token-link: #56b6c2;
 }
 
+html.light {
+  --ok: #5f7a3a;
+  --warn: #9a7420;
+  --err: #b0523b;
+  --info: #6c5a96;
+  --hatch: #6b6962;
+}
+
 html {
-  font-family: "Space Grotesk", system-ui, sans-serif;
-  font-feature-settings: "ss03" 1;
+  font-family: var(--sans);
+  font-feature-settings: "calt" 0, "zero" 1;
+  font-variant-numeric: tabular-nums;
   text-rendering: optimizeLegibility;
 }
 
 body {
   background-color: var(--bg-color) !important;
   color: var(--text-color) !important;
-  font-size: 1.025rem;
+  font-size: 0.9375rem;
   font-weight: 400;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   @apply antialiased min-h-screen relative font-sans transition-colors duration-200;
 }
 
-/* Content column sits on AMOLED; individual .site-section cards provide lift */
 .site-shell {
   min-height: calc(100vh - 3.5rem);
 }
@@ -126,23 +105,58 @@ body {
 .site-sections {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 3rem;
 }
 
+/* Flat sections — whitespace separates them, no card chrome */
 .site-section {
-  background-color: var(--section-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 0.125rem;
-  padding: 1.25rem 1.25rem 1.5rem;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
 }
 
-/* Space Grotesk tops out at 700 — avoid synthetic 800/900 bold */
+/* Hatched meter — thin outline box with diagonal fill */
+.meter {
+  position: relative;
+  display: inline-block;
+  height: 0.8rem;
+  border: 1px solid var(--text-muted);
+  flex-shrink: 0;
+}
+
+.meter > span {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  left: 1px;
+  background: repeating-linear-gradient(
+    -55deg,
+    var(--hatch) 0 1.5px,
+    transparent 1.5px 4.5px
+  );
+}
+
+.tone-ok { color: var(--ok) !important; }
+.tone-warn { color: var(--warn) !important; }
+.tone-err { color: var(--err) !important; }
+.tone-info { color: var(--info) !important; }
+
+/* Small tracked caps, e.g. "PULL REQUESTS" */
+.label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-mono);
+}
+
+/* Mono face tops out at 700 — avoid synthetic 800/900 bold */
 .font-extrabold,
 .font-black {
   font-weight: 700 !important;
 }
 
-/* True monospace for code only */
 code,
 pre,
 .astro-code,
@@ -165,34 +179,34 @@ h1, h2, h3, h4, h5, h6, .text-white, .text-zinc-100, .text-zinc-200 {
   color: #ffffff !important;
 }
 
-/* Shared section titles (Projects, Skills, etc.) — shaded bar + accent */
+/* Section labels — small, uppercase, widely tracked */
 .section-heading {
   font-family: var(--sans);
-  font-size: 1.125rem; /* ~text-lg */
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
   line-height: 1.25;
-  color: var(--text-heading) !important;
+  color: var(--text-mono) !important;
   margin: 0;
 }
 
 .section-heading-row {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding: 0.65rem 0;
+  margin-bottom: 1.25rem;
+  padding: 0;
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--border-color);
   border-radius: 0;
   box-shadow: none;
 }
 
-html.light .section-heading-row {
-  background: transparent;
-  box-shadow: none;
+.section-heading-row a {
+  font-size: 0.7rem !important;
+  letter-spacing: 0.2em !important;
 }
 
 /* Force paragraphs and text-zinc-400 to text-color */
@@ -207,10 +221,14 @@ p, .text-zinc-300, .text-zinc-400 {
   @apply transition-colors duration-200;
 }
 
-/* Force monospace helper text to text-mono */
+/* Force helper text to text-mono */
 .text-zinc-500, .text-zinc-600 {
   color: var(--text-mono) !important;
   @apply transition-colors duration-200;
+}
+
+.text-zinc-700 {
+  color: var(--text-muted) !important;
 }
 
 /* Force code blocks & containers to code-bg & border-color */
@@ -220,9 +238,8 @@ code, pre, .bg-zinc-950, .bg-\[\#09090b\], .bg-zinc-900\/50 {
   @apply transition-all duration-200;
 }
 
-/* Dev server navigation bar */
 nav {
-  background-color: rgba(var(--nav-bg-rgb), 0.8) !important;
+  background-color: rgba(var(--nav-bg-rgb), 0.85) !important;
   border-color: var(--border-color) !important;
   @apply transition-all duration-200;
 }
@@ -238,22 +255,22 @@ nav {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(63, 63, 70, 0.4);
-  border-radius: 2px;
+  background: rgba(117, 115, 109, 0.4);
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(82, 82, 91, 0.6);
+  background: rgba(117, 115, 109, 0.6);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(63, 63, 70, 0.4) transparent;
+  scrollbar-color: rgba(117, 115, 109, 0.4) transparent;
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  background: rgba(230, 228, 222, 0.16);
+  color: var(--text-heading);
 }
 
 html.light ::selection {
@@ -289,20 +306,17 @@ html.light ::selection {
 }
 
 :root {
-  --contrib-level-0: #101012;
-  --contrib-level-1: #0e4429;
-  --contrib-level-2: #006d32;
-  --contrib-level-3: #26a641;
-  --contrib-level-4: #39d353;
+  --contrib-level-0: #1e1e1d;
+  --contrib-level-1: #3b4332;
+  --contrib-level-2: #5c6b48;
+  --contrib-level-3: #83966a;
+  --contrib-level-4: #b3c492;
 }
 
 html.light {
-  --contrib-level-0: #ebedf0;
-  --contrib-level-1: #9be9a8;
-  --contrib-level-2: #40c463;
-  --contrib-level-3: #30a14e;
-  --contrib-level-4: #216e39;
+  --contrib-level-0: #e4e2da;
+  --contrib-level-1: #c3cfa8;
+  --contrib-level-2: #98ad73;
+  --contrib-level-3: #6f8a4a;
+  --contrib-level-4: #4a6130;
 }
-
-
-
