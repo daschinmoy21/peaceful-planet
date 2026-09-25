@@ -13,7 +13,7 @@ const experiences = [
 ];
 ---
 
-<div class="max-w-2xl mx-auto py-6">
+<div class="site-section" data-reveal>
   <div class="section-heading-row">
     <h2 class="section-heading">Experience</h2>
   </div>
@@ -22,19 +22,18 @@ const experiences = [
     {experiences.map((exp) => (
       <div class="flex flex-col gap-2 animate-fade-in-up">
         <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
-          <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-            <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight font-sans">
+          <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
+            <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 font-sans lowercase">
               {exp.role}
             </h3>
-            <span class="text-xs font-mono text-zinc-500">at {exp.company}</span>
+            <span class="text-xs font-mono text-zinc-500 lowercase">{exp.company}</span>
           </div>
-          <span class="text-xs font-mono text-zinc-400 shrink-0">{exp.period}</span>
+          <span class="text-xs font-mono tone-ok shrink-0 lowercase">{exp.period}</span>
         </div>
-        
-        <ul class="flex flex-col gap-1.5 font-mono text-xs text-zinc-400 mt-1 pl-1">
+
+        <ul class="flex flex-col gap-1.5 font-mono text-xs text-zinc-400 mt-1">
           {exp.description.map((item) => (
-            <li class="flex items-start gap-2.5 leading-relaxed">
-              <span class="text-zinc-600 shrink-0 select-none">→</span>
+            <li class="flex items-baseline gap-2.5 leading-relaxed">
               <span>{item}</span>
             </li>
           ))}

@@ -1,20 +1,22 @@
-<div class="max-w-2xl mx-auto py-6 animate-fade-in-up">
+---
+const groups = [
+  { key: "languages", items: "Rust, Go, TypeScript, C++, Python, JavaScript" },
+  { key: "tech", items: "Docker, Docker Compose, Nix, Terraform, CI/CD, Linux, Git, WebRTC, FFmpeg" },
+  { key: "databases", items: "PostgreSQL, MongoDB" },
+];
+---
+
+<div class="site-section animate-fade-in-up" data-reveal>
   <div class="section-heading-row">
     <h2 class="section-heading">Skills</h2>
   </div>
-  
-  <div class="flex flex-col gap-3 font-mono text-sm pl-1">
-    <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
-      <span class="text-zinc-600 w-32 shrink-0">languages:</span>
-      <span class="text-zinc-400">Rust, Go, TypeScript, C++, Python, JavaScript</span>
-    </div>
-    <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
-      <span class="text-zinc-600 w-32 shrink-0">technologies:</span>
-      <span class="text-zinc-400">Docker, Docker Compose, Nix, Terraform, CI/CD, Linux, Git, WebRTC, FFmpeg</span>
-    </div>
-    <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
-      <span class="text-zinc-600 w-32 shrink-0">databases:</span>
-      <span class="text-zinc-400">PostgreSQL, MongoDB</span>
-    </div>
+
+  <div class="flex flex-col gap-2 font-mono text-sm">
+    {groups.map((group) => (
+      <div class="flex items-baseline gap-2.5">
+        <span class="w-24 shrink-0 text-zinc-200">{group.key}</span>
+        <span class="text-zinc-400 leading-relaxed">{group.items}</span>
+      </div>
+    ))}
   </div>
 </div>

@@ -14,6 +14,7 @@ const repositories = repositoryLimit
   ? filteredRepositories.slice(0, repositoryLimit)
   : filteredRepositories;
 const visiblePRs = prLimit ? activity.prs.slice(0, prLimit) : activity.prs;
+const maxRepositoryCount = Math.max(1, ...repositories.map((repository) => repository.count));
 const hasMoreRepositories = Boolean(
   repositoryLimit && filteredRepositories.length > repositoryLimit,
 );
@@ -35,25 +36,25 @@ const contributionLabel = (contribution: GitHubContribution) =>
   `${contribution.count} ${contribution.count === 1 ? "contribution" : "contributions"} on ${formatDate(contribution.date)}`;
 ---
 
-<div class="max-w-2xl mx-auto py-6 animate-fade-in-up">
+<div class="site-section animate-fade-in-up" data-reveal>
   <div class="section-heading-row">
     <h2 class="section-heading">GitHub Activity</h2>
     {showViewAll && hasMoreActivity && (
       <a
         href="/oss"
-        class="text-xs font-mono text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors duration-200 uppercase tracking-wider shrink-0"
+        class="font-mono text-zinc-500 hover:text-zinc-950 dark:hover:text-white transition-colors duration-200 uppercase shrink-0"
       >
-        View all →
+        view all →
       </a>
     )}
   </div>
 
   <div
     data-github-activity
-    class={`github-activity-card relative border border-zinc-900 bg-zinc-950/60 p-4 ${repositories.length > 0 ? "pb-20" : ""}`}
+    class={`github-activity-card relative border border-zinc-900 p-4 ${repositories.length > 0 ? "pb-20" : ""}`}
   >
-    <p class="mb-4 px-1 text-base font-medium tracking-tight text-zinc-200">
-      {activity.total.toLocaleString("en-US")} contributions{activity.year ? ` in ${activity.year}` : ""}
+    <p class="mb-4 px-1 text-sm text-zinc-500"><span class="text-zinc-200 font-semibold">
+      {activity.total.toLocaleString("en-US")}</span> contributions{activity.year ? ` in ${activity.year}` : ""}
     </p>
 
     {hasContributions ? (
@@ -100,13 +101,13 @@ const contributionLabel = (contribution: GitHubContribution) =>
 
     {hasContributions && (
       <div class="mt-4 flex items-center justify-end gap-2 px-1 text-[10px] font-mono text-zinc-500">
-        <span>Less</span>
+        <span>less</span>
         <span class="github-activity-legend-cell" style="--cell-color: var(--contrib-level-0)"></span>
         <span class="github-activity-legend-cell" style="--cell-color: var(--contrib-level-1)"></span>
         <span class="github-activity-legend-cell" style="--cell-color: var(--contrib-level-2)"></span>
         <span class="github-activity-legend-cell" style="--cell-color: var(--contrib-level-3)"></span>
         <span class="github-activity-legend-cell" style="--cell-color: var(--contrib-level-4)"></span>
-        <span>More</span>
+        <span>more</span>
       </div>
     )}
 
@@ -117,7 +118,7 @@ const contributionLabel = (contribution: GitHubContribution) =>
         class="github-activity-panel"
       >
         <div class="flex items-center justify-between gap-3 px-3 py-3">
-          <span class="truncate text-sm text-zinc-300">Top PR repositories</span>
+          <span class="truncate label">top pr repositories</span>
           <div class="flex items-center gap-3">
             <div data-github-avatars class="flex items-center">
               {repositories.slice(0, 3).map((repository) => (
@@ -136,7 +137,7 @@ const contributionLabel = (contribution: GitHubContribution) =>
               aria-expanded="false"
               aria-controls={panelId}
               aria-label="Show top repositories"
-              class="github-activity-chevron grid size-7 shrink-0 place-items-center rounded-full bg-zinc-950 text-zinc-400 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
+              class="github-activity-chevron grid size-7 shrink-0 place-items-center text-zinc-400 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -170,7 +171,10 @@ const contributionLabel = (contribution: GitHubContribution) =>
                 )}
               </span>
               <span class="min-w-0 flex-1 truncate text-sm text-zinc-200">{repository.name}</span>
-              <span class="shrink-0 text-sm tabular-nums text-zinc-500">{repository.count} PR{repository.count === 1 ? "" : "s"}</span>
+              <span class="meter hidden sm:inline-block w-24" aria-hidden="true">
+                <span style={`width: calc(${Math.max(4, (repository.count / maxRepositoryCount) * 100)}% - 2px)`}></span>
+              </span>
+              <span class="w-12 shrink-0 text-right text-sm tabular-nums text-zinc-500">{repository.count} pr{repository.count === 1 ? "" : "s"}</span>
             </a>
           ))}
         </div>
@@ -181,8 +185,8 @@ const contributionLabel = (contribution: GitHubContribution) =>
   </div>
 
   {visiblePRs.length > 0 && (
-    <div class="mt-6 flex flex-col gap-5">
-      <div class="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+    <div class="mt-8 flex flex-col gap-4">
+      <div class="label">
         Pull requests
       </div>
       {visiblePRs.map((pr) => {
@@ -190,32 +194,30 @@ const contributionLabel = (contribution: GitHubContribution) =>
         const open = pr.state === "open";
         const statusLabel = merged ? "merged" : open ? "open" : "closed";
         const statusColor = merged
-          ? "text-purple-400"
+          ? "tone-info"
           : open
-            ? "text-emerald-500"
-            : "text-rose-500";
-        const date = new Date(pr.created_at).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        });
+            ? "tone-ok"
+            : "tone-err";
+        const date = new Date(pr.created_at).toISOString().slice(0, 10);
 
         return (
           <div class="flex flex-col gap-0.5">
-            <div class="flex items-start justify-between gap-4">
-              <a
-                href={pr.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white transition-colors font-sans tracking-tight"
-              >
-                {pr.title}
-              </a>
-              <span class={`text-[10px] font-mono font-medium uppercase tracking-wider shrink-0 mt-0.5 ${statusColor}`}>
-                ● {statusLabel}
+            <div class="flex items-baseline justify-between gap-4">
+              <div class="flex items-baseline gap-2.5 min-w-0">
+                <a
+                  href={pr.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white transition-colors font-sans"
+                >
+                  {pr.title}
+                </a>
+              </div>
+              <span class={`text-xs font-mono shrink-0 ${statusColor}`}>
+                {statusLabel}
               </span>
             </div>
-            <div class="flex flex-wrap items-center gap-3 text-xs font-mono text-zinc-500">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono text-zinc-500">
               <a
                 href={pr.repo.html_url}
                 target="_blank"
@@ -224,7 +226,7 @@ const contributionLabel = (contribution: GitHubContribution) =>
               >
                 {pr.repo.full_name}
               </a>
-              <span class="text-amber-400">★ {pr.repo.stars.toLocaleString("en-US")}</span>
+              <span class="tone-warn">★ {pr.repo.stars.toLocaleString("en-US")}</span>
               <span>#{pr.number}</span>
               <span>{date}</span>
             </div>
@@ -324,8 +326,8 @@ const contributionLabel = (contribution: GitHubContribution) =>
   .github-activity-card {
     --github-cell-size: 10px;
     --github-cell-gap: 3px;
-    border-radius: 20px;
-    background-color: var(--code-bg);
+    border-radius: 0;
+    background-color: transparent;
   }
 
   .github-activity-grid-frame {
@@ -378,7 +380,7 @@ const contributionLabel = (contribution: GitHubContribution) =>
     height: var(--github-cell-size);
     padding: 0;
     border: 0;
-    border-radius: 3px;
+    border-radius: 1px;
     background: transparent;
     cursor: help;
   }
@@ -393,7 +395,7 @@ const contributionLabel = (contribution: GitHubContribution) =>
     display: block;
     width: 100%;
     height: 100%;
-    border-radius: 3px;
+    border-radius: 1px;
     background: var(--cell-color);
   }
 
@@ -420,8 +422,8 @@ const contributionLabel = (contribution: GitHubContribution) =>
     z-index: 2;
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--border-color) 90%, transparent);
-    border-radius: 14px;
-    background: color-mix(in srgb, var(--code-bg) 88%, transparent);
+    border-radius: 0;
+    background: color-mix(in srgb, var(--bg-color) 92%, transparent);
     backdrop-filter: blur(12px);
     transition: top 0.35s ease, background-color 0.2s ease;
   }
@@ -438,7 +440,7 @@ const contributionLabel = (contribution: GitHubContribution) =>
     place-items: center;
     overflow: hidden;
     border: 2px solid var(--code-bg);
-    border-radius: 999px;
+    border-radius: 2px;
     background: var(--border-color);
     color: var(--text-color);
     font-family: var(--font-code);
@@ -487,7 +489,7 @@ const contributionLabel = (contribution: GitHubContribution) =>
     gap: 0.75rem;
     margin: 0 0.5rem;
     padding: 0.5rem;
-    border-radius: 0.75rem;
+    border-radius: 0;
     transition: background-color 0.2s ease;
   }
 
@@ -506,7 +508,7 @@ const contributionLabel = (contribution: GitHubContribution) =>
     z-index: 50;
     max-width: calc(100vw - 1rem);
     padding: 0.35rem 0.5rem;
-    border-radius: 0.5rem;
+    border-radius: 0;
     background: var(--text-heading);
     color: var(--bg-color);
     font-family: var(--font-code);

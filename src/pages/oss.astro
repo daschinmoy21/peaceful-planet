@@ -18,7 +18,5 @@ const activity = await fetchGitHubActivity().catch((err) => {
 ---
 
 <Layout>
-  <div class="py-6">
-    <GitHubActivity activity={activity} />
-  </div>
+  <GitHubActivity activity={activity} />
 </Layout>
